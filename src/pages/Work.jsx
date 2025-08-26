@@ -20,14 +20,14 @@ const projects = [
     slug: "onionworks",
     title: "ONION WORKS",
     years: "WEB / 2025—NOW",
-    img: "../assets/portofolio-website/onionwrks.png",
+    img: "assets/portofolio-website/onionwrks.png",
     href: "https://onionwrks.com/",
   },
   {
     slug: "sos",
     title: "SCORE OFF SCOOT",
     years: "WEB / 2024—NOW",
-    img: "../assets/portofolio-website/sos.png",
+    img: "assets/portofolio-website/sos.png",
     href: "https://www.scoreoffscoot.com/",
   },
 ];
