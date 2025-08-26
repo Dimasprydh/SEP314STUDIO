@@ -1,0 +1,192 @@
+:root {
+  /* tema header (hitam + aksen biru) */
+  --paper: #000;
+  --ink: #5d86ff; /* warna link/brand */
+  --ink-dim: rgba(255, 255, 255, 0.76);
+  --line: rgba(255, 255, 255, 0.16);
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  color: #fff;
+}
+
+.bar {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+/* cluster */
+.bar__left,
+.bar__mid,
+.bar__right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.bar__left {
+  /* font-size: 100px; */
+}
+
+/* brand */
+.brand {
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 700;
+}
+.brand:hover {
+  text-decoration: underline;
+}
+.muted {
+  color: var(--ink-dim);
+}
+
+/* WIB ticker (tengah) */
+.wib-ticker {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
+  letter-spacing: 0.02em;
+  position: relative;
+  white-space: nowrap;
+  font-size: 15px;
+}
+.wib-ticker::after {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 1em;
+  margin-left: 6px;
+  background: var(--ink);
+  transform: translateY(2px);
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* nav (desktop) */
+.nav {
+  display: flex;
+  gap: 16px;
+}
+.nav__link {
+  position: relative;
+  color: var(--ink);
+  text-decoration: none;
+  padding: 4px 2px;
+  outline: none;
+}
+.nav__link:hover {
+  text-decoration: underline;
+}
+.nav__link.active,
+.nav__link[aria-current="page"] {
+  text-decoration: none;
+}
+.nav__link.active::after,
+.nav__link[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  background: var(--ink);
+}
+
+/* aksesibilitas fokus */
+.nav__link:focus-visible,
+.brand:focus-visible,
+.drawer__link:focus-visible,
+.menu-btn:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* tombol menu (mobile) */
+.menu-btn {
+  display: none;
+  width: 36px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  position: relative;
+}
+.menu-btn span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #fff;
+  transform-origin: center;
+  transition: transform 0.25s ease, opacity 0.25s ease, top 0.25s ease;
+}
+.menu-btn span:nth-child(1) {
+  top: 6px;
+}
+.menu-btn span:nth-child(2) {
+  top: 13px;
+}
+.menu-btn span:nth-child(3) {
+  top: 20px;
+}
+.menu-btn.is-open span:nth-child(1) {
+  top: 13px;
+  transform: rotate(45deg);
+}
+.menu-btn.is-open span:nth-child(2) {
+  opacity: 0;
+}
+.menu-btn.is-open span:nth-child(3) {
+  top: 13px;
+  transform: rotate(-45deg);
+}
+
+/* drawer mobile */
+.drawer {
+  display: none;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+.drawer.show {
+  display: grid;
+}
+.drawer__link {
+  color: #fff;
+  text-decoration: none;
+  padding: 14px 24px;
+  border-top: 1px solid var(--line);
+}
+.drawer__link:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* responsif */
+@media (max-width: 860px) {
+  .bar__mid {
+    display: none;
+  } /* sembunyikan info tengah di mobile */
+}
+@media (max-width: 720px) {
+  .nav {
+    display: none;
+  } /* desktop nav disembunyikan */
+  .menu-btn {
+    display: inline-block;
+  }
+}

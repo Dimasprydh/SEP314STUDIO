@@ -1,0 +1,209 @@
+:root {
+  --paper: #000;
+  --ink: #fff;
+  --line: rgba(255, 255, 255, 0.16);
+  /* kontrol jarak awal sebelum galeri mulai */
+  --work-top-gap: clamp(14vh, 20vh, 28vh);
+}
+
+/* RIGHT gallery */
+.work__right {
+  position: relative;
+}
+
+/* spacer dipendekin agar awal halaman nggak “kosong” */
+.work__spacer {
+  height: var(--work-top-gap);
+}
+
+/* ===== HERO MARK (particle text) ===== */
+.heroMark {
+  position: relative;
+  width: min(980px, 70vw);
+  height: clamp(96px, 14vw, 200px);
+  /* tarik naik: sebagian dari spacer kita “ambil balik” */
+  margin: calc(-1.6 * var(--work-top-gap)) 0 clamp(20px, 4vw, 48px);
+}
+.heroMark canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.heroMark__shadow {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  font-size: clamp(56px, 14vw, 170px);
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+}
+
+/* mobile: jarak awal lebih pendek */
+@media (max-width: 980px) {
+  :root {
+    --work-top-gap: clamp(10vh, 14vh, 18vh);
+  }
+  .work__wrap {
+    grid-template-columns: 1fr;
+  }
+  .work__sticky {
+    position: static;
+  }
+  .work-card__figure {
+    width: 100%;
+  }
+}
+
+.work {
+  background: var(--paper);
+  color: var(--ink);
+  min-height: calc(100vh - var(--header-h, 0px));
+}
+
+.work__wrap {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: clamp(16px, 2.2vw, 28px);
+  padding-top: calc(clamp(16px, 2.2vw, 28px) + var(--header-h, 0px));
+  display: grid;
+  grid-template-columns: minmax(240px, 34%) 1fr;
+  gap: clamp(16px, 3vw, 48px);
+}
+
+/* LEFT sticky */
+.work__left {
+  position: relative;
+}
+.work__sticky {
+  position: sticky;
+  top: calc(var(--header-h, 0px) + clamp(8px, 1.5vw, 16px));
+  display: grid;
+  gap: 12px;
+}
+.work__kicker {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.work__title {
+  margin: 0;
+  font-size: clamp(28px, 6vw, 45px);
+  line-height: 1;
+  font-weight: 800;
+  animation: fadeIn 0.36s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+.work__meta {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 12px;
+  opacity: 0.8;
+}
+.work__cta {
+  display: inline-block;
+  width: max-content;
+  margin-top: 6px;
+  padding: 8px 10px;
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 700;
+}
+.work__cta:hover {
+  background: #111;
+}
+.work__count {
+  margin-top: 6px;
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+/* Idle (belum engage) */
+.work__idle .work__meta,
+.work__idle .work__count {
+  opacity: 0.35;
+}
+.work__idle .work__cta {
+  opacity: 0.35;
+  pointer-events: none;
+  filter: grayscale(1);
+}
+
+/* RIGHT gallery */
+.work__right {
+  position: relative;
+}
+
+/* Spacer agak besar supaya awal page jelas “WORK” */
+.work__spacer {
+  height: 52vh;
+}
+
+.work-card {
+  margin-bottom: clamp(40px, 12vh, 160px);
+}
+.work-card__figure {
+  position: relative;
+  width: min(820px, 64vw);
+  aspect-ratio: 3/2;
+  margin: 0;
+  border: 2px solid var(--ink);
+  background: #0f0f0f;
+  cursor: pointer;
+}
+.work-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(1) contrast(1.15) brightness(0.92);
+  transition: filter 0.18s ease;
+}
+.work-card.is-active .work-card__img,
+.work-card__figure:hover .work-card__img {
+  filter: none;
+}
+.work-card__cap {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  background: #000;
+  border: 2px solid #fff;
+  padding: 4px 6px;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+.work-card::after {
+  content: "";
+  display: block;
+  height: 1px;
+  margin-top: 14px;
+  background: linear-gradient(90deg, var(--line), transparent);
+}
+
+@media (max-width: 980px) {
+  .work__wrap {
+    grid-template-columns: 1fr;
+  }
+  .work__sticky {
+    position: static;
+  }
+  .work-card__figure {
+    width: 100%;
+  }
+}

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>SEP Loader</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --paper: #000;
+        --ink: #fff;
+        --fade-text: 0.9s;
+        --fade-bg: 1.3s;
+        --easing: cubic-bezier(0.22, 0.61, 0.36, 1);
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        /* PENTING: mulai dengan background hitam solid anti bocor */
+        background: #000;
+        color: var(--ink);
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        overscroll-behavior: contain;
+      }
+      /* overlay full-screen */
+      .s314-loader {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        isolation: isolate;
+      }
+      /* background yang difade (di atas body) */
+      .s314-loader::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--paper);
+        opacity: 1;
+        transition: opacity var(--fade-bg) var(--easing);
+        z-index: -1;
+      }
+      /* teks */
+      .s314-loader__text {
+        font-weight: 800;
+        font-size: clamp(34px, 8.5vw, 128px);
+        line-height: 1;
+        letter-spacing: 0.01em;
+        font-variant-numeric: tabular-nums;
+        text-align: center;
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+        transition: opacity var(--fade-text) var(--easing),
+          transform var(--fade-text) var(--easing),
+          filter var(--fade-text) var(--easing);
+        will-change: opacity, transform, filter;
+      }
+      /* state hide */
+      .s314-loader.hidden .s314-loader__text {
+        opacity: 0;
+        transform: translateY(8px) scale(0.985);
+        filter: blur(6px);
+      }
+      .s314-loader.hidden::before {
+        opacity: 0;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .s314-loader__text,
+        .s314-loader::before {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="s314-loader" id="loader">
+      <div class="s314-loader__text" id="t">SEP 3.14 PM 10:44:10</div>
+    </div>
+
+    <script>
+      // --- Konfigurasi sederhana ---
+      const TARGET_TEXT = "SEP 3.14 PM 10:44:10";
+      const BACK_SECONDS = 6;
+      const TICK_MS = 250;
+      const HOLD_MS = 500;
+      const FADE_OUT_MS = 1300;
+
+      const t = document.getElementById("t");
+      const loader = document.getElementById("loader");
+
+      const rx = /^(.*?\s(?:AM|PM))\s(\d{1,2}):(\d{2}):(\d{2})$/;
+      const m = TARGET_TEXT.match(rx);
+
+      if (!m) {
+        smoothHide();
+      } else {
+        const prefix = m[1],
+          HH = m[2].padStart(2, "0"),
+          MM = m[3].padStart(2, "0");
+        const targetSec = parseInt(m[4], 10);
+        let s = Math.max(0, targetSec - BACK_SECONDS);
+
+        const show = (sec) => {
+          t.textContent = `${prefix} ${HH}:${MM}:${String(sec).padStart(
+            2,
+            "0"
+          )}`;
+        };
+
+        (function tick() {
+          show(s);
+          if (s < targetSec) {
+            s++;
+            setTimeout(tick, TICK_MS);
+          } else {
+            setTimeout(smoothHide, HOLD_MS);
+          }
+        })();
+      }
+
+      function smoothHide() {
+        // Saat MULAI fade: jadikan body transparan agar halaman di belakang terlihat mulus.
+        document.body.style.background = "transparent";
+        loader.classList.add("hidden");
+        setTimeout(() => {
+          try {
+            parent.postMessage("s314-loader-done", "*");
+          } catch (e) {}
+        }, FADE_OUT_MS + 60);
+      }
+    </script>
+  </body>
+</html>

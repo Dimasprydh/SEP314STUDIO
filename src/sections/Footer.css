@@ -1,0 +1,53 @@
+:root {
+  --paper: #000;
+  --ink: #fff;
+  --line: rgba(255, 255, 255, 0.16);
+}
+
+/* blok footer */
+.site-footer {
+  background: var(--paper);
+  color: var(--ink);
+  border-top: 1px solid var(--line);
+}
+
+.footer-wrap {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 24px 56px;
+}
+
+/* big type */
+.footer-mark {
+  margin: 0;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 0.9;
+  text-transform: uppercase;
+  font-size: clamp(48px, 12vw, 200px);
+  /* varian: outline neo-brutalism (aktifkan 3 baris di bawah ini jika mau) */
+  /* color: transparent;
+  -webkit-text-stroke: 2px var(--ink);
+  text-shadow: none; */
+}
+
+/* baris meta */
+.footer-meta {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
+
+.footer-meta a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 2px solid var(--ink);
+}
+.footer-meta a:hover {
+  background: var(--ink);
+  color: var(--paper);
+}

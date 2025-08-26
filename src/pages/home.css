@@ -1,0 +1,262 @@
+:root {
+  --paper: #000;
+  --ink: #fff;
+  --gap: 18px;
+  --header-h: 56px;
+}
+
+/* Base */
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Space Grotesk", system-ui, -apple-system, Segoe UI, Roboto,
+    Helvetica, Arial, sans-serif;
+}
+a {
+  color: var(--ink);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Stage: gunakan fallback bila --header-h belum di-set layout */
+.stage {
+  display: flex;
+  align-items: center;
+  min-height: calc(100vh - var(--header-h, 0px));
+  background: var(--paper);
+}
+@supports (height: 100dvh) {
+  .stage {
+    min-height: calc(100dvh - var(--header-h, 0px));
+  }
+}
+
+.strip-wrap {
+  max-width: 1400px;
+  margin: auto;
+  width: 100%;
+  padding: 22px clamp(14px, 3vw, 28px);
+}
+.strip {
+  position: relative;
+  overflow: hidden;
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 10%,
+    #000 90%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 10%,
+    #000 90%,
+    transparent
+  );
+}
+.track {
+  display: flex;
+  gap: var(--gap);
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+}
+.set {
+  display: flex;
+  gap: var(--gap);
+}
+
+/* Card */
+.card {
+  flex: 0 0 clamp(240px, 24vw, 420px);
+  aspect-ratio: 3/2;
+  background: #0f0f0f;
+  border: 2px solid var(--ink);
+  position: relative;
+}
+.card::after {
+  content: attr(data-title);
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  background: #000;
+  color: #fff;
+  padding: 3px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border: 2px solid var(--ink);
+}
+
+/* Image FX */
+.card__img {
+  filter: grayscale(1) contrast(1.2) brightness(0.9);
+  transition: filter 0.18s;
+}
+.card:hover .card__img {
+  filter: none;
+}
+
+/* Click halo */
+.card__link {
+  position: absolute;
+  inset: -6px;
+  border: 2px solid transparent;
+}
+.card:hover .card__link {
+  border-color: var(--ink);
+}
+
+/* =========================================================
+   BRUTALISM SPEC REVEAL (Gaya A)
+   - Caption atas turun ke gambar
+   - Panel info bawah naik dari bawah (di atas gambar)
+   ======================================================= */
+.card--reveal {
+  position: relative;
+  overflow: visible;
+  z-index: 1;
+}
+/* Sembunyikan label bawaan agar tidak bentrok */
+.card--reveal::after {
+  display: none;
+}
+
+/* shared */
+.cap {
+  pointer-events: none; /* klik tetap tembus ke link */
+  color: #fff;
+  letter-spacing: 0.02em;
+  font-weight: 800;
+}
+.cap h3 {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.1;
+}
+.cap p {
+  margin: 2px 0 0;
+  font-size: 11px;
+  opacity: 0.9;
+}
+
+/* TOP caption — muncul dari atas, menempel di dalam gambar */
+.cap--top {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  background: #000;
+  border: 2px solid #fff;
+  padding: 6px 8px;
+  transform: translateY(-10px);
+  opacity: 0;
+  transition: transform 0.22s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.22s;
+}
+
+/* BOTTOM panel — naik dari bawah, tetap di dalam gambar (anti-klip strip) */
+.cap--bottom {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  background: #000;
+  border: 2px solid #fff;
+  padding: 10px 12px;
+  transform: translateY(12px);
+  opacity: 0;
+  transition: transform 0.26s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.26s;
+}
+.cap--bottom .lead {
+  margin: 0 0 8px;
+  line-height: 1.15;
+}
+.cap--bottom .meta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 12px;
+}
+.cap--bottom .meta span {
+  display: inline-block;
+  padding: 2px 6px;
+  border: 2px solid #fff;
+  margin-right: 6px;
+}
+.cap--bottom .meta b {
+  font-weight: 800;
+}
+
+/* Hover triggers */
+.card--reveal:hover .cap--top {
+  transform: translateY(0);
+  opacity: 1;
+}
+.card--reveal:hover .cap--bottom {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Biar panel gak ketimpa kartu sebelah */
+.card--reveal:hover {
+  z-index: 5;
+}
+
+/* ===== Footer-stamp tipografi gede (overlay, no scroll) ===== */
+.stamp-foot {
+  position: fixed;
+  left: max(5px, 2vw);
+  right: max(16px, 2vw);
+  bottom: max(2px, 1.5vh);
+  z-index: 4; /* di atas konten, di bawah header/loader */
+  pointer-events: none; /* biar hover/klik kartu tetap jalan */
+}
+
+/* Versi outline halus (quiet/editorial) */
+.stamp-foot__word {
+  display: block;
+  margin: 0;
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: 0.01em;
+  font-size: clamp(48px, 16vw, 100px);
+  color: transparent;
+  -webkit-text-stroke: 2px var(--ink);
+  opacity: 0.22; /* atur intensitas ghost-outline */
+}
+
+/* Opsional: efek “poster” sedikit geser bayangan outline */
+.stamp-foot__word::before {
+  content: attr(data-word);
+  position: absolute;
+  inset: 0;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--ink);
+  transform: translate(6px, 6px);
+  opacity: 0.12;
+}
+
+/* Responsif: kecilkan di layar sempit biar nggak nutup konten penting */
+@media (max-width: 560px) {
+  .stamp-foot__word {
+    font-size: clamp(36px, 12vw, 120px);
+    -webkit-text-stroke: 1.5px var(--ink);
+    opacity: 0.2;
+  }
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+  .card {
+    flex-basis: clamp(220px, 70vw, 340px);
+  }
+}
