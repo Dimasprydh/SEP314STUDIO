@@ -1,6 +1,7 @@
 // src/pages/About.jsx
 import React, { useRef, useState, useCallback } from "react";
 import "./about.css";
+const BASE = import.meta.env.BASE_URL;
 
 export default function About() {
   // figure mengikuti rasio asli video
