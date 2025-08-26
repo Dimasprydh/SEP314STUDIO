@@ -7,17 +7,11 @@ const projects = [
   {
     slug: "mediocre",
     title: "MEDIOCRE",
-    years: "WEB / 2023—NOW",
-    img: "public/assets/portofolio-website/mediocre.png",
+    years: "WEB / 2024—NOW",
+    img: "assets/portofolio-website/mediocre.png",
     href: "https://mediocreq.com/",
   },
-  {
-    slug: "roomforair",
-    title: "ROOM FOR AIR",
-    years: "WEB / 2024—NOW",
-    img: "assets/portofolio-website/roomforair.png",
-    href: "https://www.roomforair.com/",
-  },
+ 
   {
     slug: "onionworks",
     title: "ONION WORKS",
@@ -31,6 +25,13 @@ const projects = [
     years: "WEB / 2024—NOW",
     img: "assets/portofolio-website/sos.png",
     href: "https://www.scoreoffscoot.com/",
+  },
+   {
+    slug: "roomforair",
+    title: "ROOM FOR AIR",
+    years: "WEB / 2024—NOW",
+    img: "assets/portofolio-website/roomforair.png",
+    href: "https://www.roomforair.com/",
   },
 ];
 
