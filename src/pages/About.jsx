@@ -1,6 +1,7 @@
 // src/pages/About.jsx
 import React, { useRef, useState, useCallback } from "react";
 import "./about.css";
+import { asset } from "../utils/asset";
 
 export default function About() {
   // figure mengikuti rasio asli video
@@ -45,10 +46,7 @@ export default function About() {
                 onLoadedMetadata={onMeta}
               >
                 {/* pakai mp4 utama; mov sebagai fallback kalau perlu */}
-                <source
-                  src="../assets/about-image-video/profile.mp4"
-                  type="video/mp4"
-                />
+               <source src={asset("assets/about-image-video/profile.mp4")} type="video/mp4" />
               </video>
               {/* shield transparan: blok klik kanan/drag */}
               <div
