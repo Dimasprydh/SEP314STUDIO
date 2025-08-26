@@ -1,17 +1,16 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./work.css";
-
-
 import { asset } from "../utils/asset";
+
 const projects = [
   {
     slug: "mediocre",
     title: "MEDIOCRE",
     years: "WEB / 2024—NOW",
-    img: "public/assets/portofolio-website/mediocre.png",
+    img: "assets/portofolio-website/mediocre.png",
     href: "https://mediocreq.com/",
   },
- {
+  {
     slug: "roomforair",
     title: "ROOM FOR AIR",
     years: "WEB / 2024—NOW",
@@ -34,12 +33,8 @@ const projects = [
   },
 ];
 
-
 /* =========================================================
-   HERO MARK — SEP314STUDIO particle text
-   - 2D canvas (webgl-like), no deps
-   - Partikel repel dari pointer, lalu snap balik
-   - Respect prefers-reduced-motion
+   HERO MARK — SEP314STUDIO particle text (dipendekkan)
 ========================================================= */
 function HeroMark({ text = "SEP314STUDIO" }) {
   const hostRef = useRef(null);
@@ -58,211 +53,138 @@ function HeroMark({ text = "SEP314STUDIO" }) {
   }, []);
 
   useEffect(() => {
-    if (reduced) return; // static fallback handled by CSS layer below
+    if (reduced) return;
 
     const el = hostRef.current;
     const c = canvasRef.current;
     const ctx = c.getContext("2d");
-
     const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
 
-    const buildParticles = () => {
+    const build = () => {
       const box = el.getBoundingClientRect();
       c.width = Math.floor(box.width * dpr);
       c.height = Math.floor(box.height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      const w = c.width / dpr;
-      const h = c.height / dpr;
-
-      // render text ke offscreen
+      const w = c.width / dpr, h = c.height / dpr;
       const off = document.createElement("canvas");
-      off.width = w;
-      off.height = h;
-      const octx = off.getContext("2d");
-      octx.clearRect(0, 0, w, h);
-      const fs = Math.min(w * 0.18, 150); // ukuran font relatif
-      octx.font = `800 ${fs}px Space Grotesk, system-ui, -apple-system, sans-serif`;
-      octx.textAlign = "center";
-      octx.textBaseline = "middle";
-      octx.fillStyle = "#fff";
-      octx.fillText(text, w / 2, h / 2);
+      off.width = w; off.height = h;
+      const o = off.getContext("2d");
+      o.clearRect(0, 0, w, h);
+      const fs = Math.min(w * 0.18, 150);
+      o.font = `800 ${fs}px Space Grotesk, system-ui, -apple-system, sans-serif`;
+      o.textAlign = "center"; o.textBaseline = "middle";
+      o.fillStyle = "#fff";
+      o.fillText(text, w / 2, h / 2);
 
-      // sampling pixel → partikel
-      const data = octx.getImageData(0, 0, w, h).data;
-      const step = Math.max(3, Math.floor(w / 180)); // density
+      const data = o.getImageData(0, 0, w, h).data;
+      const step = Math.max(3, Math.floor(w / 180));
       const pts = [];
       for (let y = 0; y < h; y += step) {
         for (let x = 0; x < w; x += step) {
-          const a = data[(y * w + x) * 4 + 3];
-          if (a > 8) pts.push({ x, y, vx: 0, vy: 0, hx: x, hy: y });
+          if (data[(y * w + x) * 4 + 3] > 8) pts.push({ x, y, vx: 0, vy: 0, hx: x, hy: y });
         }
       }
       particlesRef.current = pts;
     };
 
     const render = () => {
-      const w = c.width / dpr;
-      const h = c.height / dpr;
+      const w = c.width / dpr, h = c.height / dpr;
       ctx.clearRect(0, 0, w, h);
+      const pts = particlesRef.current, mx = pointerRef.current.x, my = pointerRef.current.y;
 
-      const pts = particlesRef.current;
-      const mx = pointerRef.current.x;
-      const my = pointerRef.current.y;
-
-      for (let i = 0; i < pts.length; i++) {
-        const p = pts[i];
-
-        // spring balik ke home
+      for (const p of pts) {
         p.vx += (p.hx - p.x) * 0.02;
         p.vy += (p.hy - p.y) * 0.02;
-
-        // repel dari pointer
-        const dx = p.x - mx;
-        const dy = p.y - my;
-        const r = 140;
-        const dist2 = dx * dx + dy * dy;
-        if (dist2 < r * r) {
-          const force = (1 - dist2 / (r * r)) * 0.6;
-          p.vx += dx * force;
-          p.vy += dy * force;
+        const dx = p.x - mx, dy = p.y - my, r = 140, d2 = dx*dx + dy*dy;
+        if (d2 < r*r) {
+          const f = (1 - d2 / (r*r)) * 0.6;
+          p.vx += dx * f; p.vy += dy * f;
         }
-
-        // integrasi + damping
-        p.vx *= 0.88;
-        p.vy *= 0.88;
-        p.x += p.vx;
-        p.y += p.vy;
+        p.vx *= 0.88; p.vy *= 0.88; p.x += p.vx; p.y += p.vy;
       }
 
-      // gambar partikel
       ctx.fillStyle = "#fff";
       const sz = Math.max(1, Math.floor(w / 500));
-      for (let i = 0; i < pts.length; i++) {
-        const p = pts[i];
-        ctx.fillRect(p.x, p.y, sz, sz);
-      }
+      for (const p of pts) ctx.fillRect(p.x, p.y, sz, sz);
 
       rafRef.current = requestAnimationFrame(render);
     };
 
-    const resize = () => {
-      buildParticles();
-    };
-
-    buildParticles();
+    build();
     rafRef.current = requestAnimationFrame(render);
-    window.addEventListener("resize", resize);
-
-    return () => {
-      cancelAnimationFrame(rafRef.current);
-      window.removeEventListener("resize", resize);
-    };
+    const onR = () => build();
+    window.addEventListener("resize", onR);
+    return () => { cancelAnimationFrame(rafRef.current); window.removeEventListener("resize", onR); };
   }, [text, reduced]);
 
   const onMove = (e) => {
     const r = hostRef.current.getBoundingClientRect();
-    pointerRef.current.x = e.clientX - r.left;
-    pointerRef.current.y = e.clientY - r.top;
+    pointerRef.current.x = e.clientX - r.left; pointerRef.current.y = e.clientY - r.top;
   };
-  const onLeave = () => {
-    pointerRef.current.x = 1e6;
-    pointerRef.current.y = 1e6;
-  };
+  const onLeave = () => { pointerRef.current.x = 1e6; pointerRef.current.y = 1e6; };
 
   return (
-    <div
-      className={`heroMark${reduced ? " is-static" : ""}`}
-      ref={hostRef}
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
-      aria-label={text}
-    >
-      {/* canvas = partikel */}
+    <div className={`heroMark${reduced ? " is-static" : ""}`} ref={hostRef} onMouseMove={onMove} onMouseLeave={onLeave} aria-label={text}>
       {!reduced && <canvas ref={canvasRef} />}
-      {/* outline text (shadow layer) — selalu ada agar tetap “brutalist” */}
-      <span className="heroMark__shadow" aria-hidden>
-        {text}
-      </span>
+      <span className="heroMark__shadow" aria-hidden>{text}</span>
     </div>
   );
 }
 
 export default function Work() {
-  const [active, setActive] = useState(null); // null = belum engage → "WORK"
+  const [active, setActive] = useState(null);
   const [engaged, setEngaged] = useState(false);
   const activeRef = useRef(active);
   const itemRefs = useRef([]);
   activeRef.current = active;
 
+  // DEBUG: cek URL yang dipakai sebenarnya
+  useEffect(() => {
+    projects.forEach(p => {
+      const url = asset(p.img);
+      const img = new Image();
+      img.onload  = () => console.log("OK  :", p.slug, url);
+      img.onerror = () => console.warn("MISS:", p.slug, url);
+      img.src = url + (url.includes("?") ? "&" : "?") + "v=" + Date.now();
+    });
+  }, []);
+
   useEffect(() => {
     let ticking = false;
-
     const update = () => {
       ticking = false;
-
       const items = itemRefs.current.filter(Boolean);
       if (!items.length) return;
 
-      const vh = window.innerHeight;
-      const mid = vh / 2;
-
-      // START GUARD: jangan engage kalau kartu pertama belum cukup dekat
-      const firstRect = items[0].getBoundingClientRect();
-      const startGuardPassed = firstRect.top < vh * 0.35;
-      if (!startGuardPassed) {
-        if (engaged) setEngaged(false);
-        if (activeRef.current !== null) setActive(null);
-        return;
-      }
+      const vh = window.innerHeight, mid = vh / 2;
+      const first = items[0].getBoundingClientRect();
+      if (first.top >= vh * 0.35) { if (engaged) setEngaged(false); if (activeRef.current !== null) setActive(null); return; }
 
       const engageRadius = Math.max(180, vh * 0.33);
-      let bestSlug = null;
-      let bestDist = Infinity;
-
+      let bestSlug = null, bestDist = Infinity;
       for (const el of items) {
         const r = el.getBoundingClientRect();
         const c = r.top + r.height / 2;
         const d = Math.abs(c - mid);
-        if (d < bestDist) {
-          bestDist = d;
-          bestSlug = el.getAttribute("data-slug");
-        }
+        if (d < bestDist) { bestDist = d; bestSlug = el.getAttribute("data-slug"); }
       }
 
-      const nowEngaged = bestDist < engageRadius;
-      setEngaged(nowEngaged);
-      if (nowEngaged && bestSlug && bestSlug !== activeRef.current) {
-        setActive(bestSlug);
-      } else if (!nowEngaged && activeRef.current !== null) {
-        setActive(null);
-      }
+      const now = bestDist < engageRadius;
+      setEngaged(now);
+      if (now && bestSlug && bestSlug !== activeRef.current) setActive(bestSlug);
+      else if (!now && activeRef.current !== null) setActive(null);
     };
 
-    const onScroll = () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(update);
-      }
-    };
-
+    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
     update();
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
+    return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
   }, [engaged]);
 
-  const activeProject = useMemo(
-    () => projects.find((p) => p.slug === active) || null,
-    [active]
-  );
-  const index = active
-    ? projects.findIndex((p) => p.slug === active) + 1
-    : null;
+  const activeProject = useMemo(() => projects.find(p => p.slug === active) || null, [active]);
+  const index = active ? projects.findIndex(p => p.slug === active) + 1 : null;
 
   return (
     <div className="work">
@@ -271,63 +193,46 @@ export default function Work() {
         <aside className="work__left">
           <div className={`work__sticky ${engaged ? "" : "work__idle"}`}>
             <div className="work__kicker">SELECTED WORK</div>
-
-            <h1
-              className="work__title"
-              key={engaged ? activeProject?.slug : "idle"}
-            >
+            <h1 className="work__title" key={engaged ? activeProject?.slug : "idle"}>
               {engaged ? activeProject?.title : "WORK"}
             </h1>
-
-            <div className="work__meta">
-              {engaged ? activeProject?.years : "—"}
-            </div>
-
+            <div className="work__meta">{engaged ? activeProject?.years : "—"}</div>
             <a
               className="work__cta"
               href={engaged ? activeProject?.href : undefined}
               target={engaged ? "_blank" : undefined}
               rel={engaged ? "noreferrer" : undefined}
               aria-disabled={engaged ? "false" : "true"}
-              onClick={(e) => {
-                if (!engaged) e.preventDefault();
-              }}
+              onClick={(e) => { if (!engaged) e.preventDefault(); }}
             >
               Open project ↗
             </a>
-
-            <div className="work__count">
-              {engaged && index
-                ? `${index}/${projects.length}`
-                : `0/${projects.length}`}
-            </div>
+            <div className="work__count">{engaged && index ? `${index}/${projects.length}` : `0/${projects.length}`}</div>
           </div>
         </aside>
 
         {/* RIGHT: vertical gallery */}
         <section className="work__right">
-          {/* Spacer atas (agar awalnya tetap "WORK") */}
           <div className="work__spacer" aria-hidden="true" />
-
-          {/* HERO MARK tepat di atas project pertama */}
           <HeroMark text="SEP314STUDIO" />
 
           {projects.map((p, i) => (
-            <article
-              key={p.slug}
-              className={`work-card ${active === p.slug ? "is-active" : ""}`}
-              data-slug={p.slug}
-              ref={(el) => (itemRefs.current[i] = el)}
-            >
-              <figure
-                className="work-card__figure"
-                onClick={() => window.open(p.href, "_blank")}
-              >
+            <article key={p.slug} className={`work-card ${active === p.slug ? "is-active" : ""}`} data-slug={p.slug} ref={(el) => (itemRefs.current[i] = el)}>
+              <figure className="work-card__figure" onClick={() => window.open(p.href, "_blank")}>
                 <img
                   className="work-card__img"
-                  src={p.img}
+                  src={asset(p.img)}
                   alt={p.title}
                   loading="lazy"
+                  onError={(e) => {
+                    // fallback & log kalau masih tidak ketemu
+                    const tried = e.currentTarget.dataset.tried || "png";
+                    console.warn("MISS <img>:", p.slug, asset(p.img));
+                    if (tried === "png") {
+                      e.currentTarget.src = asset(p.img.replace(/\.png$/i, ".jpg"));
+                      e.currentTarget.dataset.tried = "jpg";
+                    }
+                  }}
                 />
                 <figcaption className="work-card__cap">
                   <b>{p.title}</b> <span>— {p.years}</span>
