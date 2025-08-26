@@ -2,10 +2,6 @@
 import React, { useRef, useState, useCallback } from "react";
 import "./about.css";
 
-// helper aman untuk subpath (GitHub Pages)
-const asset = (p) => `${import.meta.env.BASE_URL}${p.replace(/^\//, "")}`;
-
-
 export default function About() {
   // figure mengikuti rasio asli video
   const [ratio, setRatio] = useState(3 / 4); // default portrait
@@ -50,7 +46,7 @@ export default function About() {
               >
                 {/* pakai mp4 utama; mov sebagai fallback kalau perlu */}
                 <source
-                  src={asset("assets/about-image-video/profile.mp4")}
+                  src="../assets/about-image-video/profile.mp4"
                   type="video/mp4"
                 />
                 <source
