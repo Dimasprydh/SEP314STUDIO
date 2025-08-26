@@ -46,7 +46,7 @@ export default function About() {
               >
                 {/* pakai mp4 utama; mov sebagai fallback kalau perlu */}
                 <source
-                  src="${BASE}/assets/about-image-video/profile.mp4"
+                  src="${BASE}assets/about-image-video/profile.mp4"
                   type="video/mp4"
                 />
                 <source
