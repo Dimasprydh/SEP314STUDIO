@@ -46,7 +46,7 @@ export default function About() {
                 onLoadedMetadata={onMeta}
               >
                 {/* pakai mp4 utama; mov sebagai fallback kalau perlu */}
-               <source src={asset("assets/about-image-video/profile.mp4")} type="video/mp4" />
+               <source src="assets/about-image-video/profile.mp4" type="video/mp4" />
               </video>
               {/* shield transparan: blok klik kanan/drag */}
               <div
