@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./work.css";
-import { asset } from "src/utils/asset";
+import { asset } from "../utils/asset";
 
 const projects = [
   {
