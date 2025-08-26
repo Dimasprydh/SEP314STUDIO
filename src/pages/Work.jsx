@@ -27,7 +27,7 @@ const projects = [
     slug: "sos",
     title: "SCORE OFF SCOOT",
     years: "WEB / 2024—NOW",
-    img: "../public/assets/portofolio-website/sos.png",
+    img: "../assets/portofolio-website/sos.png",
     href: "https://www.scoreoffscoot.com/",
   },
 ];
