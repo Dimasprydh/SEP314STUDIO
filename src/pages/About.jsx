@@ -1,7 +1,7 @@
 // src/pages/About.jsx
 import React, { useRef, useState, useCallback } from "react";
 import "./about.css";
-import { asset } from "src/utils/asset";
+import { asset } from "../utils/asset";
 
 export default function About() {
   // figure mengikuti rasio asli video
