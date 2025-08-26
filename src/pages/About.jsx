@@ -46,12 +46,8 @@ export default function About() {
               >
                 {/* pakai mp4 utama; mov sebagai fallback kalau perlu */}
                 <source
-                  src="../public/assets/about-image-video/profile.mp4"
+                  src="../assets/about-image-video/profile.mp4"
                   type="video/mp4"
-                />
-                <source
-                  src="/assets/about-image-video/profile.mov"
-                  type="video/quicktime"
                 />
               </video>
               {/* shield transparan: blok klik kanan/drag */}
