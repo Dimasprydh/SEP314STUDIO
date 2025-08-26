@@ -6,7 +6,7 @@ const projects = [
     slug: "mediocre",
     title: "MEDIOCRE",
     years: "WEB / 2023—NOW",
-    img: "../assets/portofolio-website/mediocre.png",
+    img: "/assets/portofolio-website/mediocre.png",
     href: "https://mediocreq.com/",
   },
   {
