@@ -1,6 +1,7 @@
 // src/pages/index.jsx
 import React, { useEffect, useRef } from "react";
 import "./home.css"; // CSS khusus halaman ini
+import { asset } from "../utils/asset";
 
 // Data proyek (tanpa "lead")
 const projects = [
@@ -8,7 +9,7 @@ const projects = [
     slug: "mediocre",
     title: "MEDIOCRE",
     years: "WEB / 2023—NOW",
-    img: "public/assets/portofolio-website/mediocre.png",
+    img: "assets/portofolio-website/mediocre.png",
     role: "Full-stack",
     stack: "Shopify Liquid · HTML · CSS · JavaScript",
     status: "Inactive",
@@ -19,7 +20,7 @@ const projects = [
     slug: "roomforair",
     title: "ROOM FOR AIR",
     years: "WEB / 2024—NOW",
-    img: "public/assets/portofolio-website/roomforair.png",
+    img: "assets/portofolio-website/roomforair.png",
     role: "Full-stack",
     stack: "Shopify Liquid · HTML · CSS · JavaScript",
     status: "Live",
@@ -30,7 +31,7 @@ const projects = [
     slug: "onionworks",
     title: "ONION WORKS",
     years: "WEB / 2025—NOW",
-    img: "public/assets/portofolio-website/onionwrks.png",
+    img: "assets/portofolio-website/onionwrks.png",
     role: "Full-stack",
     stack: "Shopify Liquid · HTML · CSS · JavaScript",
     status: "Live",
@@ -41,7 +42,7 @@ const projects = [
     slug: "sos",
     title: "SCORE OFF SCOOT",
     years: "WEB / 2024—NOW",
-    img: "public/assets/portofolio-website/sos.png",
+    img: "assets/portofolio-website/sos.png",
     role: "Full-stackd",
     stack: "Shopify Liquid · HTML · CSS · JavaScript",
     status: "Live",
