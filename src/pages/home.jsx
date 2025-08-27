@@ -8,7 +8,7 @@ const projects = [
   {
     slug: "mediocre",
     title: "MEDIOCRE",
-    years: "WEB / 2023—NOW",
+    years: "WEB / 2024—NOW",
     img: "assets/portofolio-website/mediocre.png",
     role: "Full-stack",
     stack: "Shopify Liquid · HTML · CSS · JavaScript",
