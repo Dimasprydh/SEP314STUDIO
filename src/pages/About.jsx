@@ -87,10 +87,7 @@ export default function About() {
             >
               Instagram
             </a>
-            <span>—</span>
-            <a href="https://vimeo.com/" target="_blank" rel="noreferrer">
-              Vimeo
-            </a>
+          
           </div>
 
           <div className="about__sections">
