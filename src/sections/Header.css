@@ -179,7 +179,7 @@
 /* responsif */
 @media (max-width: 860px) {
   .bar__mid {
-    display: none;
+   
   } /* sembunyikan info tengah di mobile */
 }
 @media (max-width: 720px) {
