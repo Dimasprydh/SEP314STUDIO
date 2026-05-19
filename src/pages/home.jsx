@@ -1,9 +1,8 @@
 // src/pages/index.jsx
-import React, { useEffect, useRef } from "react";
-import "./home.css"; // CSS khusus halaman ini
+import React from "react";
+import "./home.css";
 import { asset } from "../utils/asset";
 
-// Data proyek (tanpa "lead")
 const projects = [
   {
     slug: "mediocre",
@@ -43,7 +42,7 @@ const projects = [
     title: "SCORE OFF SCOOT",
     years: "WEB / 2024—NOW",
     img: "assets/portofolio-website/sos.png",
-    role: "Full-stackd",
+    role: "Full-stack",
     stack: "Shopify Liquid · HTML · CSS · JavaScript",
     status: "Live",
     href: "https://www.scoreoffscoot.com/",
@@ -51,17 +50,23 @@ const projects = [
   },
 ];
 
-// Komponen kartu (tanpa lead)
 function Card({ p }) {
   return (
     <article className="card card--reveal" data-title={p.subtitle}>
-      <img className="card__img" src={p.img} alt={p.title} />
-      {/* Top spec */}
+      <img
+        className="card__img"
+        src={asset(p.img)}
+        alt={`${p.title} website preview`}
+        loading="eager"
+        decoding="async"
+        draggable="false"
+      />
+
       <div className="cap cap--top">
         <h3>{p.title}</h3>
         <p>{p.years}</p>
       </div>
-      {/* Bottom spec (lead dihapus) */}
+
       <div className="cap cap--bottom">
         <div className="meta">
           <div>
@@ -78,6 +83,7 @@ function Card({ p }) {
           </div>
         </div>
       </div>
+
       <a
         className="card__link"
         href={p.href}
@@ -90,85 +96,18 @@ function Card({ p }) {
 }
 
 export default function Home() {
-  const stripRef = useRef(null);
-  const trackRef = useRef(null);
-  const baseSetRef = useRef(null);
-  const pausedRef = useRef(false);
-
-  useEffect(() => {
-    const track = trackRef.current;
-    const baseSet = baseSetRef.current;
-    if (!track || !baseSet) return;
-
-    let setW = 0,
-      x = 0,
-      rafId = 0,
-      last = 0;
-    const SPEED = 48;
-
-    const whenImagesReady = () =>
-      Promise.all(
-        [...track.querySelectorAll("img")].map((img) =>
-          (img.decode ? img.decode() : Promise.resolve()).catch(() => {})
-        )
-      );
-
-    const measure = () => {
-      const rect = baseSet.getBoundingClientRect();
-      const gap = parseFloat(getComputedStyle(track).gap) || 0;
-      setW = rect.width + gap;
-    };
-
-    const loop = (now) => {
-      if (!last) last = now;
-      const dt = (now - last) / 1000;
-      last = now;
-
-      if (!pausedRef.current && setW) {
-        x -= SPEED * dt;
-        if (x <= -setW) x += setW;
-        track.style.transform = `translate3d(${x}px,0,0)`;
-      }
-      rafId = requestAnimationFrame(loop);
-    };
-
-    const onResize = () => {
-      const offsetInSet = setW ? ((x % setW) + setW) % setW : 0;
-      measure();
-      x = -offsetInSet;
-    };
-
-    window.addEventListener("resize", onResize);
-    whenImagesReady().then(() => {
-      measure();
-      rafId = requestAnimationFrame(loop);
-    });
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      window.removeEventListener("resize", onResize);
-    };
-  }, []);
-
   return (
-    <div className="home">
-      <section className="stage">
+    <main className="home">
+      <section className="stage" aria-label="Selected portfolio projects">
         <div className="strip-wrap">
-          <div
-            className="strip"
-            ref={stripRef}
-            onPointerEnter={() => (pausedRef.current = true)}
-            onPointerLeave={() => (pausedRef.current = false)}
-          >
-            <div className="track" ref={trackRef}>
-              {/* SET #1 */}
-              <div className="set" ref={baseSetRef} id="base-set">
+          <div className="strip">
+            <div className="track">
+              <div className="set">
                 {projects.map((p) => (
                   <Card key={`a-${p.slug}`} p={p} />
                 ))}
               </div>
 
-              {/* SET #2 (duplicate) */}
               <div className="set" aria-hidden="true">
                 {projects.map((p) => (
                   <Card key={`b-${p.slug}`} p={p} />
@@ -177,13 +116,13 @@ export default function Home() {
             </div>
           </div>
         </div>
-        {/* Footer-stamp tipografi gede, tidak menambah tinggi halaman */}
+
         <div className="stamp-foot" aria-hidden="true">
           <span className="stamp-foot__word" data-word="SEP314STUDIO">
             SEP314STUDIO
           </span>
         </div>
       </section>
-    </div>
+    </main>
   );
 }
