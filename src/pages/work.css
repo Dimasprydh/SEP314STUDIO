@@ -24,7 +24,7 @@
   gap: clamp(16px, 3vw, 48px);
 }
 
-/* LEFT sticky - desktop */
+/* LEFT sticky - BALIK KE AWAL */
 .work__left {
   position: relative;
 }
@@ -51,7 +51,7 @@
   animation: fadeIn 0.28s ease both;
 }
 
-/* blur dihapus supaya Safari tidak berat */
+/* blur dihapus biar Safari/web lain lebih ringan */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -195,7 +195,7 @@
   background: linear-gradient(90deg, var(--line), transparent);
 }
 
-/* TABLET / MOBILE */
+/* TABLET / MOBILE - BALIK AMAN */
 @media (max-width: 980px) {
   :root {
     --work-top-gap: clamp(10vh, 14vh, 18vh);
@@ -203,55 +203,15 @@
 
   .work__wrap {
     grid-template-columns: 1fr;
-    gap: 0;
   }
 
   /*
-    Mobile/tablet beda dari desktop:
-    di layout 1 kolom, sticky harus di parent .work__left,
-    bukan di .work__sticky, supaya tetap ngikut scroll.
+    Ini saya biarin seperti awal:
+    desktop sticky, mobile/tablet static.
+    Jangan dipindah ke .work__left lagi.
   */
-  .work__left {
-    position: sticky;
-    top: var(--header-h, 0px);
-    z-index: 50;
-    margin: 0 calc(clamp(16px, 2.2vw, 28px) * -1);
-    background: #000;
-    border-bottom: 1px solid var(--line);
-  }
-
   .work__sticky {
-    position: relative;
-    top: auto;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 6px 12px;
-    align-items: center;
-    padding: 12px clamp(16px, 2.2vw, 28px);
-  }
-
-  .work__kicker,
-  .work__title,
-  .work__meta {
-    grid-column: 1 / 2;
-  }
-
-  .work__title {
-    font-size: clamp(28px, 7vw, 44px);
-  }
-
-  .work__count {
-    grid-column: 2 / 3;
-    grid-row: 1 / 2;
-    justify-self: end;
-    margin-top: 0;
-  }
-
-  .work__cta {
-    grid-column: 2 / 3;
-    grid-row: 2 / 4;
-    align-self: center;
-    margin-top: 0;
+    position: static;
   }
 
   .work-card__figure {
@@ -271,14 +231,8 @@
     padding-top: calc(12px + var(--header-h, 0px));
   }
 
-  .work__left {
-    top: var(--header-h, 0px);
-    margin: 0 -12px;
-  }
-
   .work__sticky {
-    padding: 10px 12px;
-    gap: 5px 10px;
+    gap: 8px;
   }
 
   .work__kicker {
@@ -344,20 +298,6 @@
     max-width: calc(100% - 14px);
     border-width: 1.5px;
     font-size: 10px;
-  }
-}
-
-/* SMALL MOBILE */
-@media (max-width: 420px) {
-  .work__sticky {
-    grid-template-columns: 1fr;
-  }
-
-  .work__count,
-  .work__cta {
-    grid-column: 1 / 2;
-    grid-row: auto;
-    justify-self: start;
   }
 }
 
