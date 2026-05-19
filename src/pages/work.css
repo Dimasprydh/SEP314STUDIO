@@ -287,8 +287,13 @@
   }
 
   .work-card__img {
+    opacity: 0.6;
+    transition: opacity 0.18s ease;
+  }
+
+  .work-card.is-active .work-card__img,
+  .work-card__figure:hover .work-card__img {
     opacity: 1;
-    transition: none;
   }
 
   .work-card__cap {
