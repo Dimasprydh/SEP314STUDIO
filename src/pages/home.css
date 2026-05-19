@@ -1,262 +1,465 @@
 :root {
   --paper: #000;
   --ink: #fff;
-  --gap: 18px;
+  --gap: clamp(12px, 2vw, 18px);
   --header-h: 56px;
+  --marquee-duration: 34s;
 }
 
-/* Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
 body {
+  min-height: 100%;
+  background: var(--paper);
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
   background: var(--paper);
   color: var(--ink);
-  font-family: "Space Grotesk", system-ui, -apple-system, Segoe UI, Roboto,
-    Helvetica, Arial, sans-serif;
+  font-family: "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
+
 a {
-  color: var(--ink);
+  color: inherit;
   text-decoration: none;
-}
-a:hover {
-  text-decoration: underline;
 }
 
 img {
   display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
-/* Stage: gunakan fallback bila --header-h belum di-set layout */
-.stage {
-  display: flex;
-  align-items: center;
-  min-height: calc(100vh - var(--header-h, 0px));
+/* PAGE */
+.home {
+  min-height: calc(100vh - var(--header-h));
   background: var(--paper);
+  color: var(--ink);
+  overflow: hidden;
 }
-@supports (height: 100dvh) {
-  .stage {
-    min-height: calc(100dvh - var(--header-h, 0px));
+
+@supports (height: 100svh) {
+  .home {
+    min-height: calc(100svh - var(--header-h));
   }
 }
 
-.strip-wrap {
-  max-width: 1400px;
-  margin: auto;
-  width: 100%;
-  padding: 22px clamp(14px, 3vw, 28px);
-}
-.strip {
+/* STAGE */
+.stage {
   position: relative;
+  display: flex;
+  align-items: center;
+  min-height: calc(100vh - var(--header-h));
+  padding: clamp(32px, 7vh, 74px) 0;
+  background: var(--paper);
   overflow: hidden;
-  mask-image: linear-gradient(
-    90deg,
-    transparent,
-    #000 10%,
-    #000 90%,
-    transparent
-  );
-  -webkit-mask-image: linear-gradient(
-    90deg,
-    transparent,
-    #000 10%,
-    #000 90%,
-    transparent
-  );
-}
-.track {
-  display: flex;
-  gap: var(--gap);
-  will-change: transform;
-  backface-visibility: hidden;
-  transform: translate3d(0, 0, 0);
-}
-.set {
-  display: flex;
-  gap: var(--gap);
 }
 
-/* Card */
+@supports (height: 100svh) {
+  .stage {
+    min-height: calc(100svh - var(--header-h));
+  }
+}
+
+/* STRIP */
+.strip-wrap {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 clamp(14px, 3vw, 32px);
+}
+
+.strip {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+@supports (-webkit-mask-image: linear-gradient(90deg, transparent, #000)) {
+  .strip {
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      #000 8%,
+      #000 92%,
+      transparent 100%
+    );
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+  }
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  animation: portfolioMarquee var(--marquee-duration) linear infinite;
+}
+
+.strip:hover .track {
+  animation-play-state: paused;
+}
+
+.set {
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--gap);
+  padding-right: var(--gap);
+}
+
+/* Karena ada 6 set duplicate, cukup geser 1 set = 16.666% */
+@keyframes portfolioMarquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(-16.666666%, 0, 0);
+    -webkit-transform: translate3d(-16.666666%, 0, 0);
+  }
+}
+
+/* CARD */
 .card {
-  flex: 0 0 clamp(240px, 24vw, 420px);
-  aspect-ratio: 3/2;
+  position: relative;
+  flex: 0 0 clamp(250px, 24vw, 400px);
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
   background: #0f0f0f;
   border: 2px solid var(--ink);
-  position: relative;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
-.card::after {
+
+.card::before {
   content: attr(data-title);
   position: absolute;
   left: 8px;
   bottom: 8px;
+  z-index: 3;
+  max-width: calc(100% - 16px);
+  padding: 4px 7px;
+  border: 2px solid var(--ink);
   background: #000;
   color: #fff;
-  padding: 3px 6px;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
+  line-height: 1.1;
   letter-spacing: 0.02em;
-  border: 2px solid var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-/* Image FX */
 .card__img {
-  filter: grayscale(1) contrast(1.2) brightness(0.9);
-  transition: filter 0.18s;
-}
-.card:hover .card__img {
-  filter: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.86;
+  user-select: none;
+  pointer-events: none;
+  transform: scale(1.001);
+  -webkit-transform: scale(1.001);
+  transition: opacity 0.22s ease, transform 0.35s ease;
 }
 
-/* Click halo */
+.card:hover .card__img {
+  opacity: 1;
+  transform: scale(1.035);
+  -webkit-transform: scale(1.035);
+}
+
+.card:hover::before {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+/* LINK */
 .card__link {
   position: absolute;
-  inset: -6px;
-  border: 2px solid transparent;
+  inset: 0;
+  z-index: 6;
 }
-.card:hover .card__link {
+
+.card__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px solid transparent;
+  pointer-events: none;
+  transition: inset 0.18s ease, border-color 0.18s ease;
+}
+
+.card:hover .card__link::after {
+  inset: 6px;
   border-color: var(--ink);
 }
 
-/* =========================================================
-   BRUTALISM SPEC REVEAL (Gaya A)
-   - Caption atas turun ke gambar
-   - Panel info bawah naik dari bawah (di atas gambar)
-   ======================================================= */
-.card--reveal {
-  position: relative;
-  overflow: visible;
-  z-index: 1;
-}
-/* Sembunyikan label bawaan agar tidak bentrok */
-.card--reveal::after {
-  display: none;
+/* CAPTION */
+.cap {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
-/* shared */
-.cap {
-  pointer-events: none; /* klik tetap tembus ke link */
-  color: #fff;
-  letter-spacing: 0.02em;
-  font-weight: 800;
-}
 .cap h3 {
   margin: 0;
   font-size: 14px;
-  line-height: 1.1;
+  line-height: 1.05;
 }
+
 .cap p {
-  margin: 2px 0 0;
+  margin: 3px 0 0;
   font-size: 11px;
-  opacity: 0.9;
+  line-height: 1.1;
+  opacity: 0.82;
 }
 
-/* TOP caption — muncul dari atas, menempel di dalam gambar */
 .cap--top {
-  position: absolute;
-  left: 8px;
   top: 8px;
-  background: #000;
+  left: 8px;
+  max-width: calc(100% - 16px);
+  padding: 7px 9px;
   border: 2px solid #fff;
-  padding: 6px 8px;
-  transform: translateY(-10px);
+  background: #000;
   opacity: 0;
-  transition: transform 0.22s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.22s;
+  transform: translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.24s ease;
 }
 
-/* BOTTOM panel — naik dari bawah, tetap di dalam gambar (anti-klip strip) */
 .cap--bottom {
-  position: absolute;
   left: 8px;
   right: 8px;
   bottom: 8px;
-  background: #000;
-  border: 2px solid #fff;
   padding: 10px 12px;
-  transform: translateY(12px);
+  border: 2px solid #fff;
+  background: #000;
   opacity: 0;
-  transition: transform 0.26s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.26s;
+  transform: translateY(12px);
+  transition: opacity 0.22s ease, transform 0.26s ease;
 }
-.cap--bottom .lead {
-  margin: 0 0 8px;
-  line-height: 1.15;
+
+.card:hover .cap--top,
+.card:hover .cap--bottom {
+  opacity: 1;
+  transform: translateY(0);
 }
-.cap--bottom .meta {
+
+.meta {
   display: flex;
-  gap: 14px;
   flex-wrap: wrap;
-  font-size: 12px;
+  gap: 8px 12px;
+  font-size: 11px;
+  line-height: 1.2;
 }
-.cap--bottom .meta span {
+
+.meta div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.meta span {
   display: inline-block;
+  flex: 0 0 auto;
   padding: 2px 6px;
   border: 2px solid #fff;
-  margin-right: 6px;
+  background: #000;
+  color: #fff;
+  font-size: 10px;
+  line-height: 1.1;
 }
-.cap--bottom .meta b {
+
+.meta b {
+  display: inline-block;
+  max-width: 190px;
+  color: #fff;
+  font-size: 11px;
   font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Hover triggers */
-.card--reveal:hover .cap--top {
-  transform: translateY(0);
-  opacity: 1;
-}
-.card--reveal:hover .cap--bottom {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-/* Biar panel gak ketimpa kartu sebelah */
-.card--reveal:hover {
-  z-index: 5;
-}
-
-/* ===== Footer-stamp tipografi gede (overlay, no scroll) ===== */
+/* STAMP */
 .stamp-foot {
-  position: fixed;
-  left: max(5px, 2vw);
-  right: max(16px, 2vw);
-  bottom: max(2px, 1.5vh);
-  z-index: 4; /* di atas konten, di bawah header/loader */
-  pointer-events: none; /* biar hover/klik kartu tetap jalan */
+  position: absolute;
+  left: max(8px, 2vw);
+  right: max(8px, 2vw);
+  bottom: max(6px, 1.6vh);
+  z-index: 1;
+  pointer-events: none;
 }
 
-/* Versi outline halus (quiet/editorial) */
 .stamp-foot__word {
+  position: relative;
   display: block;
   margin: 0;
-  font-weight: 800;
-  line-height: 0.9;
-  letter-spacing: 0.01em;
-  font-size: clamp(48px, 16vw, 100px);
   color: transparent;
+  font-size: clamp(44px, 15vw, 110px);
+  font-weight: 800;
+  line-height: 0.88;
+  letter-spacing: 0.01em;
+  opacity: 0.2;
   -webkit-text-stroke: 2px var(--ink);
-  opacity: 0.22; /* atur intensitas ghost-outline */
 }
 
-/* Opsional: efek “poster” sedikit geser bayangan outline */
 .stamp-foot__word::before {
   content: attr(data-word);
   position: absolute;
   inset: 0;
   color: transparent;
-  -webkit-text-stroke: 2px var(--ink);
+  opacity: 0.1;
   transform: translate(6px, 6px);
-  opacity: 0.12;
+  -webkit-text-stroke: 2px var(--ink);
 }
 
-/* Responsif: kecilkan di layar sempit biar nggak nutup konten penting */
-@media (max-width: 560px) {
-  .stamp-foot__word {
-    font-size: clamp(36px, 12vw, 120px);
-    -webkit-text-stroke: 1.5px var(--ink);
-    opacity: 0.2;
+@supports not (-webkit-text-stroke: 1px #fff) {
+  .stamp-foot__word,
+  .stamp-foot__word::before {
+    color: rgba(255, 255, 255, 0.12);
   }
 }
 
-/* Responsive */
-@media (max-width: 720px) {
+/* TABLET */
+@media (max-width: 900px) {
+  :root {
+    --marquee-duration: 32s;
+  }
+
   .card {
-    flex-basis: clamp(220px, 70vw, 340px);
+    flex-basis: clamp(240px, 48vw, 360px);
+  }
+
+  .meta b {
+    max-width: 150px;
+  }
+}
+
+/* MOBILE */
+@media (max-width: 720px) {
+  :root {
+    --gap: 12px;
+    --marquee-duration: 30s;
+  }
+
+  .stage {
+    padding: clamp(28px, 7vh, 56px) 0;
+  }
+
+  .strip-wrap {
+    padding: 0 12px;
+  }
+
+  .card {
+    flex-basis: clamp(230px, 76vw, 330px);
+    border-width: 1.5px;
+  }
+
+  .cap h3 {
+    font-size: 12px;
+  }
+
+  .cap p {
+    font-size: 10px;
+  }
+
+  .cap--top {
+    padding: 6px 8px;
+  }
+
+  .cap--bottom {
+    padding: 8px 9px;
+  }
+
+  .meta {
+    gap: 6px 8px;
+  }
+
+  .meta span {
+    padding: 2px 5px;
+    border-width: 1.5px;
+  }
+
+  .meta b {
+    max-width: 120px;
+    font-size: 10px;
+  }
+
+  .stamp-foot__word {
+    font-size: clamp(36px, 14vw, 72px);
+    opacity: 0.18;
+    -webkit-text-stroke-width: 1.4px;
+  }
+
+  .stamp-foot__word::before {
+    transform: translate(4px, 4px);
+    -webkit-text-stroke-width: 1.4px;
+  }
+}
+
+/* SMALL MOBILE */
+@media (max-width: 420px) {
+  .card {
+    flex-basis: 78vw;
+  }
+
+  .meta {
+    display: grid;
+    gap: 5px;
+  }
+
+  .meta div {
+    gap: 5px;
+  }
+
+  .meta b {
+    max-width: 170px;
+  }
+}
+
+/* REDUCE MOTION */
+@media (prefers-reduced-motion: reduce) {
+  .strip {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    -webkit-mask-image: none;
+  }
+
+  .track {
+    animation: none;
+    transform: none;
+    -webkit-transform: none;
+  }
+
+  .set:not(:first-child) {
+    display: none;
+  }
+
+  .card__img,
+  .cap--top,
+  .cap--bottom,
+  .card__link::after,
+  .card::before {
+    transition: none;
   }
 }
