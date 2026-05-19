@@ -22,20 +22,21 @@
   display: grid;
   grid-template-columns: minmax(240px, 34%) 1fr;
   gap: clamp(16px, 3vw, 48px);
+  align-items: start;
 }
 
-/* LEFT sticky */
+/* LEFT STICKY — ini yang bikin SELECTED WORK ngikut scroll */
 .work__left {
-  position: relative;
+  position: sticky;
+  top: calc(var(--header-h, 0px) + clamp(8px, 1.5vw, 16px));
+  z-index: 10;
+  align-self: start;
+  height: max-content;
 }
 
 .work__sticky {
-  position: sticky;
-  top: calc(var(--header-h, 0px) + clamp(8px, 1.5vw, 16px));
   display: grid;
   gap: 12px;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
 }
 
 .work__kicker {
@@ -99,7 +100,6 @@
   opacity: 0.35;
 }
 
-/* Filter grayscale dihapus karena berat */
 .work__idle .work__cta {
   opacity: 0.35;
   pointer-events: none;
@@ -151,7 +151,7 @@
   -webkit-transform: translateZ(0);
 }
 
-/* Bantu browser skip render kartu yang jauh dari viewport */
+/* Bantu browser skip render kartu jauh dari viewport */
 @supports (content-visibility: auto) {
   .work-card {
     content-visibility: auto;
@@ -173,6 +173,7 @@
   contain: layout paint;
 }
 
+/* Filter grayscale dihapus karena bikin berat di Safari */
 .work-card__img {
   width: 100%;
   height: 100%;
@@ -185,7 +186,6 @@
   user-select: none;
 }
 
-/* Ganti efek grayscale jadi opacity/scale supaya Safari ringan */
 .work-card.is-active .work-card__img,
 .work-card__figure:hover .work-card__img {
   opacity: 1;
@@ -213,7 +213,7 @@
   background: linear-gradient(90deg, var(--line), transparent);
 }
 
-/* TABLET */
+/* TABLET / MOBILE */
 @media (max-width: 980px) {
   :root {
     --work-top-gap: clamp(10vh, 14vh, 18vh);
@@ -221,10 +221,50 @@
 
   .work__wrap {
     grid-template-columns: 1fr;
+    gap: 0;
+    align-items: start;
+  }
+
+  /* JANGAN position: static; karena itu yang bikin tidak ngikut */
+  .work__left {
+    position: sticky;
+    top: var(--header-h, 0px);
+    z-index: 50;
+    margin: 0 calc(clamp(16px, 2.2vw, 28px) * -1);
+    background: #000;
+    border-bottom: 1px solid var(--line);
   }
 
   .work__sticky {
-    position: static;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 6px 12px;
+    align-items: center;
+    padding: 12px clamp(16px, 2.2vw, 28px);
+  }
+
+  .work__kicker,
+  .work__title,
+  .work__meta {
+    grid-column: 1 / 2;
+  }
+
+  .work__title {
+    font-size: clamp(28px, 7vw, 44px);
+  }
+
+  .work__count {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    justify-self: end;
+    margin-top: 0;
+  }
+
+  .work__cta {
+    grid-column: 2 / 3;
+    grid-row: 2 / 4;
+    align-self: center;
+    margin-top: 0;
   }
 
   .work-card__figure {
@@ -242,6 +282,38 @@
   .work__wrap {
     padding: 12px;
     padding-top: calc(12px + var(--header-h, 0px));
+  }
+
+  .work__left {
+    top: var(--header-h, 0px);
+    margin: 0 -12px;
+  }
+
+  .work__sticky {
+    padding: 10px 12px;
+    gap: 5px 10px;
+  }
+
+  .work__kicker {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+  }
+
+  .work__title {
+    font-size: clamp(28px, 10.5vw, 40px);
+    letter-spacing: -0.045em;
+  }
+
+  .work__meta,
+  .work__count {
+    font-size: 11px;
+  }
+
+  .work__cta {
+    padding: 7px 8px;
+    border-width: 1.5px;
+    font-size: 11px;
+    white-space: nowrap;
   }
 
   .work__spacer {
@@ -285,6 +357,20 @@
     max-width: calc(100% - 14px);
     border-width: 1.5px;
     font-size: 10px;
+  }
+}
+
+/* SMALL MOBILE */
+@media (max-width: 420px) {
+  .work__sticky {
+    grid-template-columns: 1fr;
+  }
+
+  .work__count,
+  .work__cta {
+    grid-column: 1 / 2;
+    grid-row: auto;
+    justify-self: start;
   }
 }
 
