@@ -1,6 +1,7 @@
 // src/pages/index.jsx
 import React from "react";
 import "./home.css";
+import { asset } from "../utils/asset";
 
 const projects = [
   {
@@ -49,15 +50,24 @@ const projects = [
   },
 ];
 
-function Card({ p }) {
+function Card({ p, clone = false }) {
   return (
     <article className="card card--reveal" data-title={p.subtitle}>
       <img
         className="card__img"
-        src={p.img}
+        src={asset(p.img)}
         alt={`${p.title} website preview`}
-        loading="eager"
+        loading={clone ? "lazy" : "eager"}
+        decoding="async"
         draggable="false"
+        onError={(e) => {
+          const tried = e.currentTarget.dataset.tried || "png";
+
+          if (tried === "png") {
+            e.currentTarget.dataset.tried = "jpg";
+            e.currentTarget.src = asset(p.img.replace(/\.png$/i, ".jpg"));
+          }
+        }}
       />
 
       <div className="cap cap--top">
@@ -89,6 +99,7 @@ function Card({ p }) {
         href={p.href}
         target="_blank"
         rel="noreferrer"
+        tabIndex={clone ? -1 : 0}
         aria-label={`Open ${p.title}`}
       />
     </article>
@@ -110,7 +121,7 @@ export default function Home() {
 
               <div className="set" aria-hidden="true">
                 {projects.map((p) => (
-                  <Card key={`clone-${p.slug}`} p={p} />
+                  <Card key={`clone-${p.slug}`} p={p} clone />
                 ))}
               </div>
             </div>
