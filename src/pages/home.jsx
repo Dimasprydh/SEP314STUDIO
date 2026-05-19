@@ -1,5 +1,5 @@
 // src/pages/index.jsx
-import React from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import "./home.css";
 
 const projects = [
@@ -49,16 +49,15 @@ const projects = [
   },
 ];
 
-const loopSets = [0, 1, 2, 3, 4, 5];
-
-function Card({ p }) {
+function Card({ p, hiddenCard = false }) {
   return (
     <article className="card card--reveal" data-title={p.subtitle}>
       <img
         className="card__img"
         src={p.img}
         alt={`${p.title} website preview`}
-        loading="eager"
+        loading={hiddenCard ? "lazy" : "eager"}
+        decoding="async"
         draggable="false"
       />
 
@@ -91,6 +90,7 @@ function Card({ p }) {
         href={p.href}
         target="_blank"
         rel="noreferrer"
+        tabIndex={hiddenCard ? -1 : undefined}
         aria-label={`Open ${p.title}`}
       />
     </article>
@@ -98,23 +98,107 @@ function Card({ p }) {
 }
 
 export default function Home() {
+  const trackRef = useRef(null);
+  const groupRef = useRef(null);
+
+  const marqueeProjects = useMemo(() => {
+    return [...projects, ...projects];
+  }, []);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    const group = groupRef.current;
+
+    if (!track || !group) return;
+
+    let frame = 0;
+    let resizeObserver = null;
+
+    const measureAndSet = () => {
+      cancelAnimationFrame(frame);
+
+      frame = requestAnimationFrame(() => {
+        const groupWidth = Math.ceil(group.getBoundingClientRect().width);
+
+        if (!groupWidth) return;
+
+        const isMobile = window.matchMedia("(max-width: 720px)").matches;
+
+        /*
+          Semakin kecil pxPerSecond = semakin pelan.
+          Desktop dibuat 30px/s, mobile 24px/s supaya nggak kayak numpang lewat.
+        */
+        const pxPerSecond = isMobile ? 24 : 30;
+        const duration = Math.max(65, groupWidth / pxPerSecond);
+
+        track.style.setProperty("--move-x", `${groupWidth}px`);
+        track.style.setProperty("--duration", `${duration}s`);
+        track.classList.add("is-ready");
+      });
+    };
+
+    const images = Array.from(group.querySelectorAll("img"));
+
+    images.forEach((img) => {
+      if (!img.complete) {
+        img.addEventListener("load", measureAndSet, { once: true });
+        img.addEventListener("error", measureAndSet, { once: true });
+      }
+    });
+
+    measureAndSet();
+
+    if ("ResizeObserver" in window) {
+      resizeObserver = new ResizeObserver(measureAndSet);
+      resizeObserver.observe(group);
+      resizeObserver.observe(document.documentElement);
+    }
+
+    window.addEventListener("resize", measureAndSet, { passive: true });
+    window.addEventListener("orientationchange", measureAndSet, { passive: true });
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(measureAndSet).catch(() => {});
+    }
+
+    return () => {
+      cancelAnimationFrame(frame);
+
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+
+      window.removeEventListener("resize", measureAndSet);
+      window.removeEventListener("orientationchange", measureAndSet);
+
+      images.forEach((img) => {
+        img.removeEventListener("load", measureAndSet);
+        img.removeEventListener("error", measureAndSet);
+      });
+    };
+  }, []);
+
   return (
     <main className="home">
       <section className="stage" aria-label="Selected portfolio projects">
         <div className="strip-wrap">
           <div className="strip">
-            <div className="track">
-              {loopSets.map((setIndex) => (
-                <div
-                  className="set"
-                  key={`set-${setIndex}`}
-                  aria-hidden={setIndex === 0 ? "false" : "true"}
-                >
-                  {projects.map((p) => (
-                    <Card key={`${setIndex}-${p.slug}`} p={p} />
-                  ))}
-                </div>
-              ))}
+            <div className="track" ref={trackRef}>
+              <div className="marquee-group" ref={groupRef}>
+                {marqueeProjects.map((p, index) => (
+                  <Card key={`base-${index}-${p.slug}`} p={p} />
+                ))}
+              </div>
+
+              <div className="marquee-group" aria-hidden="true">
+                {marqueeProjects.map((p, index) => (
+                  <Card
+                    key={`clone-${index}-${p.slug}`}
+                    p={p}
+                    hiddenCard={true}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>
