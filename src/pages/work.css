@@ -188,13 +188,15 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: grayscale(1) contrast(1.15) brightness(0.92);
-  transition: filter 0.18s ease;
+
+  /* Pengganti filter grayscale: jauh lebih ringan di Safari/browser lain */
+  opacity: 0.6;
+  transition: opacity 0.18s ease;
 }
 
 .work-card.is-active .work-card__img,
 .work-card__figure:hover .work-card__img {
-  filter: none;
+  opacity: 1;
 }
 
 .work-card__cap {
