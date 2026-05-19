@@ -1,7 +1,6 @@
 // src/pages/index.jsx
 import React from "react";
 import "./home.css";
-import { asset } from "../utils/asset";
 
 const projects = [
   {
@@ -50,15 +49,16 @@ const projects = [
   },
 ];
 
+const loopSets = [0, 1, 2, 3, 4, 5];
+
 function Card({ p }) {
   return (
     <article className="card card--reveal" data-title={p.subtitle}>
       <img
         className="card__img"
-        src={asset(p.img)}
+        src={p.img}
         alt={`${p.title} website preview`}
         loading="eager"
-        decoding="async"
         draggable="false"
       />
 
@@ -73,10 +73,12 @@ function Card({ p }) {
             <span>ROLE</span>
             <b>{p.role}</b>
           </div>
+
           <div>
             <span>STACK</span>
             <b>{p.stack}</b>
           </div>
+
           <div>
             <span>STATUS</span>
             <b>{p.status}</b>
@@ -102,17 +104,17 @@ export default function Home() {
         <div className="strip-wrap">
           <div className="strip">
             <div className="track">
-              <div className="set">
-                {projects.map((p) => (
-                  <Card key={`a-${p.slug}`} p={p} />
-                ))}
-              </div>
-
-              <div className="set" aria-hidden="true">
-                {projects.map((p) => (
-                  <Card key={`b-${p.slug}`} p={p} />
-                ))}
-              </div>
+              {loopSets.map((setIndex) => (
+                <div
+                  className="set"
+                  key={`set-${setIndex}`}
+                  aria-hidden={setIndex === 0 ? "false" : "true"}
+                >
+                  {projects.map((p) => (
+                    <Card key={`${setIndex}-${p.slug}`} p={p} />
+                  ))}
+                </div>
+              ))}
             </div>
           </div>
         </div>
