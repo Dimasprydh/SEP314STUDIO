@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./work.css";
 import { asset } from "../utils/asset";
 
@@ -33,114 +33,224 @@ const projects = [
   },
 ];
 
-/* =========================================================
-   HERO MARK — SEP314STUDIO particle text
-========================================================= */
 function HeroMark({ text = "SEP314STUDIO" }) {
   const hostRef = useRef(null);
   const canvasRef = useRef(null);
   const rafRef = useRef(0);
   const particlesRef = useRef([]);
-  const pointerRef = useRef({ x: 1e6, y: 1e6 });
+  const pointerRef = useRef({ x: 100000, y: 100000 });
+  const activeUntilRef = useRef(0);
+  const visibleRef = useRef(true);
+  const dprRef = useRef(1);
+  const sizeRef = useRef({ w: 0, h: 0 });
   const [reduced, setReduced] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia?.("(prefers-reduced-motion: reduce)");
-    const apply = () => setReduced(!!mq?.matches);
+
+    const apply = () => {
+      setReduced(Boolean(mq?.matches));
+    };
+
     apply();
 
-    mq?.addEventListener?.("change", apply);
+    if (mq?.addEventListener) {
+      mq.addEventListener("change", apply);
+    } else if (mq?.addListener) {
+      mq.addListener(apply);
+    }
 
     return () => {
-      mq?.removeEventListener?.("change", apply);
+      if (mq?.removeEventListener) {
+        mq.removeEventListener("change", apply);
+      } else if (mq?.removeListener) {
+        mq.removeListener(apply);
+      }
     };
   }, []);
 
   useEffect(() => {
     if (reduced) return;
 
-    const el = hostRef.current;
-    const c = canvasRef.current;
-    if (!el || !c) return;
+    const host = hostRef.current;
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d", { alpha: true });
 
-    const ctx = c.getContext("2d");
-    if (!ctx) return;
+    if (!host || !canvas || !ctx) return;
 
-    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    let destroyed = false;
+    let resizeTimer = 0;
+    let observer = null;
+    let intersectionObserver = null;
+    let lastFrame = 0;
+
+    const detect = () => {
+      const ua = navigator.userAgent || "";
+      const isSafari = /^((?!chrome|android|crios|fxios|edg).)*safari/i.test(
+        ua
+      );
+      const isMobile =
+        window.matchMedia("(max-width: 720px)").matches ||
+        window.matchMedia("(pointer: coarse)").matches;
+
+      return { isSafari, isMobile };
+    };
+
+    const settings = () => {
+      const { isSafari, isMobile } = detect();
+
+      return {
+        dpr: Math.max(
+          1,
+          Math.min(window.devicePixelRatio || 1, isMobile ? 1.05 : isSafari ? 1.25 : 1.45)
+        ),
+        step: isMobile ? 6 : isSafari ? 5 : 4,
+        maxParticles: isMobile ? 520 : isSafari ? 850 : 1300,
+        fps: isMobile ? 22 : isSafari ? 30 : 42,
+        radius: isMobile ? 90 : isSafari ? 110 : 140,
+      };
+    };
+
+    const fitFont = (offCtx, width, height) => {
+      const { isMobile } = detect();
+      let fs = Math.min(width * (isMobile ? 0.155 : 0.18), height * 0.72, 150);
+
+      fs = Math.max(fs, isMobile ? 32 : 52);
+
+      offCtx.font = `800 ${fs}px Space Grotesk, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+
+      while (offCtx.measureText(text).width > width * 0.96 && fs > 24) {
+        fs -= 2;
+        offCtx.font = `800 ${fs}px Space Grotesk, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+      }
+    };
+
+    const drawStatic = () => {
+      const { w, h } = sizeRef.current;
+      if (!w || !h) return;
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = "#fff";
+
+      const dot = Math.max(1, Math.floor(w / 560));
+
+      particlesRef.current.forEach((p) => {
+        ctx.fillRect(p.hx, p.hy, dot, dot);
+      });
+    };
 
     const build = () => {
-      const box = el.getBoundingClientRect();
+      if (destroyed) return;
 
-      c.width = Math.floor(box.width * dpr);
-      c.height = Math.floor(box.height * dpr);
+      const box = host.getBoundingClientRect();
+      const width = Math.max(1, Math.round(box.width));
+      const height = Math.max(1, Math.round(box.height));
 
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      if (width < 10 || height < 10) return;
 
-      const w = c.width / dpr;
-      const h = c.height / dpr;
+      const s = settings();
+
+      dprRef.current = s.dpr;
+      sizeRef.current = { w: width, h: height };
+
+      canvas.width = Math.round(width * s.dpr);
+      canvas.height = Math.round(height * s.dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+
+      ctx.setTransform(s.dpr, 0, 0, s.dpr, 0, 0);
 
       const off = document.createElement("canvas");
-      off.width = w;
-      off.height = h;
+      off.width = width;
+      off.height = height;
 
-      const o = off.getContext("2d");
-      if (!o) return;
+      const offCtx = off.getContext("2d", { willReadFrequently: true });
+      if (!offCtx) return;
 
-      o.clearRect(0, 0, w, h);
+      offCtx.clearRect(0, 0, width, height);
+      fitFont(offCtx, width, height);
+      offCtx.textAlign = "center";
+      offCtx.textBaseline = "middle";
+      offCtx.fillStyle = "#fff";
+      offCtx.fillText(text, width / 2, height / 2);
 
-      const fs = Math.min(w * 0.18, 150);
+      const data = offCtx.getImageData(0, 0, width, height).data;
+      const step = Math.max(s.step, Math.floor(width / 180));
+      const points = [];
 
-      o.font = `800 ${fs}px Space Grotesk, system-ui, -apple-system, sans-serif`;
-      o.textAlign = "center";
-      o.textBaseline = "middle";
-      o.fillStyle = "#fff";
-      o.fillText(text, w / 2, h / 2);
-
-      const data = o.getImageData(0, 0, w, h).data;
-      const step = Math.max(3, Math.floor(w / 180));
-      const pts = [];
-
-      for (let y = 0; y < h; y += step) {
-        for (let x = 0; x < w; x += step) {
-          if (data[(y * w + x) * 4 + 3] > 8) {
-            pts.push({
+      for (let y = 0; y < height; y += step) {
+        for (let x = 0; x < width; x += step) {
+          if (data[(y * width + x) * 4 + 3] > 8) {
+            points.push({
               x,
               y,
-              vx: 0,
-              vy: 0,
               hx: x,
               hy: y,
+              vx: 0,
+              vy: 0,
             });
           }
         }
       }
 
-      particlesRef.current = pts;
+      if (points.length > s.maxParticles) {
+        const skip = Math.ceil(points.length / s.maxParticles);
+        particlesRef.current = points.filter((_, index) => index % skip === 0);
+      } else {
+        particlesRef.current = points;
+      }
+
+      drawStatic();
     };
 
-    const render = () => {
-      const w = c.width / dpr;
-      const h = c.height / dpr;
+    const stop = () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = 0;
+      }
+    };
+
+    const render = (now) => {
+      if (destroyed) return;
+
+      const s = settings();
+      const interval = 1000 / s.fps;
+
+      if (!visibleRef.current || document.hidden) {
+        stop();
+        return;
+      }
+
+      if (now - lastFrame < interval) {
+        rafRef.current = requestAnimationFrame(render);
+        return;
+      }
+
+      lastFrame = now;
+
+      const { w, h } = sizeRef.current;
+      const particles = particlesRef.current;
 
       ctx.clearRect(0, 0, w, h);
 
-      const pts = particlesRef.current;
       const mx = pointerRef.current.x;
       const my = pointerRef.current.y;
+      const radius = s.radius;
+      const radiusSq = radius * radius;
+      const dot = Math.max(1, Math.floor(w / 560));
 
-      for (const p of pts) {
+      for (const p of particles) {
         p.vx += (p.hx - p.x) * 0.02;
         p.vy += (p.hy - p.y) * 0.02;
 
         const dx = p.x - mx;
         const dy = p.y - my;
-        const r = 140;
-        const d2 = dx * dx + dy * dy;
+        const distSq = dx * dx + dy * dy;
 
-        if (d2 < r * r) {
-          const f = (1 - d2 / (r * r)) * 0.6;
-          p.vx += dx * f;
-          p.vy += dy * f;
+        if (distSq < radiusSq) {
+          const force = (1 - distSq / radiusSq) * 0.48;
+          p.vx += dx * force;
+          p.vy += dy * force;
         }
 
         p.vx *= 0.88;
@@ -151,50 +261,153 @@ function HeroMark({ text = "SEP314STUDIO" }) {
 
       ctx.fillStyle = "#fff";
 
-      const sz = Math.max(1, Math.floor(w / 500));
+      particles.forEach((p) => {
+        ctx.fillRect(p.x, p.y, dot, dot);
+      });
 
-      for (const p of pts) {
-        ctx.fillRect(p.x, p.y, sz, sz);
+      if (now < activeUntilRef.current) {
+        rafRef.current = requestAnimationFrame(render);
+      } else {
+        pointerRef.current.x = 100000;
+        pointerRef.current.y = 100000;
+
+        let stillMoving = false;
+
+        for (const p of particles) {
+          if (Math.abs(p.x - p.hx) > 0.3 || Math.abs(p.y - p.hy) > 0.3) {
+            stillMoving = true;
+            break;
+          }
+        }
+
+        if (stillMoving) {
+          rafRef.current = requestAnimationFrame(render);
+        } else {
+          particles.forEach((p) => {
+            p.x = p.hx;
+            p.y = p.hy;
+            p.vx = 0;
+            p.vy = 0;
+          });
+
+          drawStatic();
+          rafRef.current = 0;
+        }
       }
+    };
 
-      rafRef.current = requestAnimationFrame(render);
+    const start = () => {
+      if (!rafRef.current && visibleRef.current && !document.hidden) {
+        rafRef.current = requestAnimationFrame(render);
+      }
+    };
+
+    const activate = () => {
+      activeUntilRef.current = performance.now() + 900;
+      start();
+    };
+
+    host.__activateParticles = activate;
+
+    const rebuild = () => {
+      window.clearTimeout(resizeTimer);
+
+      resizeTimer = window.setTimeout(() => {
+        build();
+      }, 120);
     };
 
     build();
-    rafRef.current = requestAnimationFrame(render);
 
-    const onR = () => build();
+    if ("ResizeObserver" in window) {
+      observer = new ResizeObserver(rebuild);
+      observer.observe(host);
+    }
 
-    window.addEventListener("resize", onR);
+    if ("IntersectionObserver" in window) {
+      intersectionObserver = new IntersectionObserver(
+        ([entry]) => {
+          visibleRef.current = Boolean(entry?.isIntersecting);
+
+          if (!visibleRef.current) {
+            stop();
+          } else {
+            drawStatic();
+          }
+        },
+        { threshold: 0.08 }
+      );
+
+      intersectionObserver.observe(host);
+    }
+
+    const onVisibility = () => {
+      if (document.hidden) {
+        stop();
+      } else {
+        drawStatic();
+      }
+    };
+
+    window.addEventListener("resize", rebuild, { passive: true });
+    window.addEventListener("orientationchange", rebuild, { passive: true });
+    document.addEventListener("visibilitychange", onVisibility);
+
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(rebuild).catch(() => {});
+    }
 
     return () => {
-      cancelAnimationFrame(rafRef.current);
-      window.removeEventListener("resize", onR);
+      destroyed = true;
+      stop();
+      window.clearTimeout(resizeTimer);
+
+      if (observer) observer.disconnect();
+      if (intersectionObserver) intersectionObserver.disconnect();
+
+      window.removeEventListener("resize", rebuild);
+      window.removeEventListener("orientationchange", rebuild);
+      document.removeEventListener("visibilitychange", onVisibility);
+
+      delete host.__activateParticles;
     };
   }, [text, reduced]);
 
-  const onMove = (e) => {
-    const r = hostRef.current.getBoundingClientRect();
+  const onPointerMove = (e) => {
+    const host = hostRef.current;
+    if (!host) return;
 
-    pointerRef.current.x = e.clientX - r.left;
-    pointerRef.current.y = e.clientY - r.top;
+    const rect = host.getBoundingClientRect();
+
+    pointerRef.current.x = e.clientX - rect.left;
+    pointerRef.current.y = e.clientY - rect.top;
+
+    if (host.__activateParticles) {
+      host.__activateParticles();
+    }
   };
 
-  const onLeave = () => {
-    pointerRef.current.x = 1e6;
-    pointerRef.current.y = 1e6;
+  const onPointerLeave = () => {
+    pointerRef.current.x = 100000;
+    pointerRef.current.y = 100000;
+
+    const host = hostRef.current;
+    if (host?.__activateParticles) {
+      host.__activateParticles();
+    }
   };
 
   return (
     <div
       className={`heroMark${reduced ? " is-static" : ""}`}
       ref={hostRef}
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
+      onPointerMove={onPointerMove}
+      onPointerDown={onPointerMove}
+      onPointerLeave={onPointerLeave}
       aria-label={text}
     >
-      {!reduced && <canvas ref={canvasRef} />}
-      <span className="heroMark__shadow" aria-hidden>
+      {!reduced && <canvas ref={canvasRef} aria-hidden="true" />}
+      <span className="heroMark__shadow" aria-hidden="true">
         {text}
       </span>
     </div>
@@ -204,13 +417,30 @@ function HeroMark({ text = "SEP314STUDIO" }) {
 export default function Work() {
   const [active, setActive] = useState(null);
   const [engaged, setEngaged] = useState(false);
+
   const activeRef = useRef(active);
+  const engagedRef = useRef(engaged);
   const itemRefs = useRef([]);
 
   activeRef.current = active;
+  engagedRef.current = engaged;
 
   useEffect(() => {
     let ticking = false;
+
+    const setActiveSafe = (value) => {
+      if (activeRef.current !== value) {
+        activeRef.current = value;
+        setActive(value);
+      }
+    };
+
+    const setEngagedSafe = (value) => {
+      if (engagedRef.current !== value) {
+        engagedRef.current = value;
+        setEngaged(value);
+      }
+    };
 
     const update = () => {
       ticking = false;
@@ -218,59 +448,58 @@ export default function Work() {
       const items = itemRefs.current.filter(Boolean);
       if (!items.length) return;
 
-      const vh = window.innerHeight;
+      const vh = window.innerHeight || document.documentElement.clientHeight;
       const mid = vh / 2;
       const first = items[0].getBoundingClientRect();
 
-      if (first.top >= vh * 0.35) {
-        if (engaged) setEngaged(false);
-        if (activeRef.current !== null) setActive(null);
+      if (first.top >= vh * 0.42) {
+        setEngagedSafe(false);
+        setActiveSafe(null);
         return;
       }
 
-      const engageRadius = Math.max(180, vh * 0.33);
       let bestSlug = null;
       let bestDist = Infinity;
 
       for (const el of items) {
-        const r = el.getBoundingClientRect();
-        const c = r.top + r.height / 2;
-        const d = Math.abs(c - mid);
+        const rect = el.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        const dist = Math.abs(center - mid);
 
-        if (d < bestDist) {
-          bestDist = d;
+        if (dist < bestDist) {
+          bestDist = dist;
           bestSlug = el.getAttribute("data-slug");
         }
       }
 
-      const now = bestDist < engageRadius;
+      const radius = Math.max(160, vh * 0.34);
+      const shouldEngage = bestDist < radius;
 
-      setEngaged(now);
-
-      if (now && bestSlug && bestSlug !== activeRef.current) {
-        setActive(bestSlug);
-      } else if (!now && activeRef.current !== null) {
-        setActive(null);
-      }
+      setEngagedSafe(shouldEngage);
+      setActiveSafe(shouldEngage ? bestSlug : null);
     };
 
-    const onScroll = () => {
+    const requestUpdate = () => {
       if (!ticking) {
         ticking = true;
-        requestAnimationFrame(update);
+        window.requestAnimationFrame(update);
       }
     };
 
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate, { passive: true });
+    window.addEventListener("orientationchange", requestUpdate, {
+      passive: true,
+    });
 
-    update();
+    requestUpdate();
 
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      window.removeEventListener("orientationchange", requestUpdate);
     };
-  }, [engaged]);
+  }, []);
 
   const activeProject = useMemo(() => {
     return projects.find((p) => p.slug === active) || null;
@@ -280,8 +509,12 @@ export default function Work() {
     ? projects.findIndex((p) => p.slug === active) + 1
     : null;
 
+  const openProject = (href) => {
+    window.open(href, "_blank", "noopener,noreferrer");
+  };
+
   return (
-    <div className="work">
+    <main className="work">
       <div className="work__wrap">
         <aside className="work__left">
           <div className={`work__sticky ${engaged ? "" : "work__idle"}`}>
@@ -297,7 +530,7 @@ export default function Work() {
 
             <a
               className="work__cta"
-              href={engaged ? activeProject?.href : undefined}
+              href={engaged ? activeProject?.href : "#"}
               target={engaged ? "_blank" : undefined}
               rel={engaged ? "noreferrer" : undefined}
               aria-disabled={engaged ? "false" : "true"}
@@ -314,7 +547,7 @@ export default function Work() {
           </div>
         </aside>
 
-        <section className="work__right">
+        <section className="work__right" aria-label="Project gallery">
           <div className="work__spacer" aria-hidden="true" />
 
           <HeroMark text="SEP314STUDIO" />
@@ -324,31 +557,44 @@ export default function Work() {
               key={p.slug}
               className={`work-card ${active === p.slug ? "is-active" : ""}`}
               data-slug={p.slug}
-              ref={(el) => (itemRefs.current[i] = el)}
+              ref={(el) => {
+                itemRefs.current[i] = el;
+              }}
             >
               <figure
                 className="work-card__figure"
-                onClick={() => window.open(p.href, "_blank")}
+                role="button"
+                tabIndex={0}
+                onClick={() => openProject(p.href)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    openProject(p.href);
+                  }
+                }}
               >
                 <img
                   className="work-card__img"
                   src={asset(p.img)}
                   alt={p.title}
-                  loading="lazy"
+                  loading={i === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                  draggable="false"
                   onError={(e) => {
                     const tried = e.currentTarget.dataset.tried || "png";
 
                     if (tried === "png") {
+                      e.currentTarget.dataset.tried = "jpg";
                       e.currentTarget.src = asset(
                         p.img.replace(/\.png$/i, ".jpg")
                       );
-                      e.currentTarget.dataset.tried = "jpg";
                     }
                   }}
                 />
 
                 <figcaption className="work-card__cap">
-                  <b>{p.title}</b> <span>— {p.years}</span>
+                  <b>{p.title}</b>
+                  <span> — {p.years}</span>
                 </figcaption>
               </figure>
             </article>
@@ -357,6 +603,6 @@ export default function Work() {
           <div className="work__spacer" aria-hidden="true" />
         </section>
       </div>
-    </div>
+    </main>
   );
 }
