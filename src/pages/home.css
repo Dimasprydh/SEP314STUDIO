@@ -3,7 +3,6 @@
   --ink: #fff;
   --gap: clamp(12px, 2vw, 18px);
   --header-h: 56px;
-  --marquee-duration: 34s;
 }
 
 *,
@@ -86,6 +85,7 @@ img {
   -webkit-transform: translateZ(0);
 }
 
+/* Mask halus kiri-kanan */
 @supports (-webkit-mask-image: linear-gradient(90deg, transparent, #000)) {
   .strip {
     -webkit-mask-image: linear-gradient(
@@ -100,27 +100,52 @@ img {
   }
 }
 
+@supports (mask-image: linear-gradient(90deg, transparent, #000)) {
+  .strip {
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      #000 8%,
+      #000 92%,
+      transparent 100%
+    );
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
+  }
+}
+
+/* TRACK */
 .track {
+  --move-x: 0px;
+  --duration: 80s;
+
   display: flex;
   width: max-content;
+  opacity: 0;
   will-change: transform;
   transform: translate3d(0, 0, 0);
   -webkit-transform: translate3d(0, 0, 0);
-  animation: portfolioMarquee var(--marquee-duration) linear infinite;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
-.strip:hover .track {
+.track.is-ready {
+  opacity: 1;
+  animation: portfolioMarquee var(--duration) linear infinite;
+}
+
+.strip:hover .track,
+.strip:focus-within .track {
   animation-play-state: paused;
 }
 
-.set {
+.marquee-group {
   display: flex;
   flex: 0 0 auto;
   gap: var(--gap);
   padding-right: var(--gap);
 }
 
-/* Karena ada 6 set duplicate, cukup geser 1 set = 16.666% */
 @keyframes portfolioMarquee {
   0% {
     transform: translate3d(0, 0, 0);
@@ -128,8 +153,8 @@ img {
   }
 
   100% {
-    transform: translate3d(-16.666666%, 0, 0);
-    -webkit-transform: translate3d(-16.666666%, 0, 0);
+    transform: translate3d(calc(var(--move-x) * -1), 0, 0);
+    -webkit-transform: translate3d(calc(var(--move-x) * -1), 0, 0);
   }
 }
 
@@ -143,6 +168,7 @@ img {
   border: 2px solid var(--ink);
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
+  contain: layout paint;
 }
 
 .card::before {
@@ -178,13 +204,15 @@ img {
   transition: opacity 0.22s ease, transform 0.35s ease;
 }
 
-.card:hover .card__img {
+.card:hover .card__img,
+.card:focus-within .card__img {
   opacity: 1;
   transform: scale(1.035);
   -webkit-transform: scale(1.035);
 }
 
-.card:hover::before {
+.card:hover::before,
+.card:focus-within::before {
   opacity: 0;
   transform: translateY(8px);
 }
@@ -205,7 +233,17 @@ img {
   transition: inset 0.18s ease, border-color 0.18s ease;
 }
 
-.card:hover .card__link::after {
+.card:hover .card__link::after,
+.card:focus-within .card__link::after {
+  inset: 6px;
+  border-color: var(--ink);
+}
+
+.card__link:focus-visible {
+  outline: none;
+}
+
+.card__link:focus-visible::after {
   inset: 6px;
   border-color: var(--ink);
 }
@@ -258,7 +296,9 @@ img {
 }
 
 .card:hover .cap--top,
-.card:hover .cap--bottom {
+.card:hover .cap--bottom,
+.card:focus-within .cap--top,
+.card:focus-within .cap--bottom {
   opacity: 1;
   transform: translateY(0);
 }
@@ -342,10 +382,6 @@ img {
 
 /* TABLET */
 @media (max-width: 900px) {
-  :root {
-    --marquee-duration: 32s;
-  }
-
   .card {
     flex-basis: clamp(240px, 48vw, 360px);
   }
@@ -359,7 +395,6 @@ img {
 @media (max-width: 720px) {
   :root {
     --gap: 12px;
-    --marquee-duration: 30s;
   }
 
   .stage {
@@ -443,15 +478,18 @@ img {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     -webkit-mask-image: none;
+    mask-image: none;
   }
 
-  .track {
+  .track,
+  .track.is-ready {
+    opacity: 1;
     animation: none;
     transform: none;
     -webkit-transform: none;
   }
 
-  .set:not(:first-child) {
+  .marquee-group:nth-child(2) {
     display: none;
   }
 
