@@ -1,6 +1,7 @@
 // src/pages/Service.jsx
 import React from "react";
 import "./Service.css";
+import { asset } from "../utils/asset";
 
 export default function Service() {
   return (
