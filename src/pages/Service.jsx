@@ -16,9 +16,9 @@ export default function Service() {
           </h1>
 
           <p className="service-hero__text">
-            From Shopify stores to custom coded websites, I help brands build
-            websites that fit their visual direction, product, and business
-            needs.
+             I design and build websites for brands, businesses, and independent
+  projects, whether it needs to be an online store, brand website,
+  portfolio, or a custom coded site built from scratch.
           </p>
         </div>
       </section>
