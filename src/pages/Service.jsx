@@ -3,6 +3,35 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "./Service.css";
 
+const pricingPackages = [
+  {
+    title: "Platform Website",
+    price: "Starts from Rp800.000",
+    tag: "Shopify / WordPress / WooCommerce",
+    features: [
+      "Shopify, WordPress, or WooCommerce setup",
+      "Homepage and core website pages",
+      "Product page or catalog structure",
+      "Mobile responsive layout",
+      "Payment and shipping setup guidance",
+      "Basic launch preparation",
+    ],
+  },
+  {
+    title: "Custom Coded Website",
+    price: "Starts from Rp5.000.000",
+    tag: "React / Vite / HTML / CSS / JS / PHP",
+    features: [
+      "Website built outside of platforms",
+      "Custom layout and page structure",
+      "Brand website, portfolio, or campaign page",
+      "Responsive front-end development",
+      "Deployment setup and launch preparation",
+      "Final scope based on project complexity",
+    ],
+  },
+];
+
 export default function Service() {
   return (
     <main className="service-page">
@@ -210,40 +239,43 @@ export default function Service() {
         <div className="service-pricing__header">
           <p className="service-label">ESTIMATION</p>
 
-          <h2>
+          <h2>Pricelist</h2>
+
+          <p>
             Project cost depends on the platform, design direction, pages,
             products, features, and timeline.
-          </h2>
+          </p>
         </div>
 
         <div className="pricing-grid">
-          <article className="pricing-card">
-            <span>SHOPIFY / WORDPRESS / WOOCOMMERCE</span>
+          {pricingPackages.map((item) => (
+            <article className="pricing-card" key={item.title}>
+              <div className="pricing-card__top">
+                <span>{item.tag}</span>
+                <h3>{item.title}</h3>
+              </div>
 
-            <div>
-              <h3>Starts from Rp800.000</h3>
+              <div className="pricing-card__price">
+                <p>{item.price}</p>
+              </div>
 
-              <p>
-                For Shopify, WordPress, or WooCommerce websites. Suitable for
-                brand websites, online stores, product catalogs, landing pages,
-                and standard business websites.
-              </p>
-            </div>
-          </article>
+              <ul className="pricing-card__features">
+                {item.features.map((feature) => (
+                  <li key={feature}>
+                    <span aria-hidden="true">✓</span>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
 
-          <article className="pricing-card">
-            <span>CUSTOM CODED WEBSITE</span>
-
-            <div>
-              <h3>Starts from Rp5.000.000</h3>
-
-              <p>
-                For websites built outside of platforms using custom code. Final
-                estimation depends on the layout, pages, animation, CMS needs,
-                and technical complexity.
-              </p>
-            </div>
-          </article>
+              <a
+                href="mailto:sep314studio@gmail.com?subject=Website Project Inquiry"
+                className="pricing-card__button"
+              >
+                Discuss Project
+              </a>
+            </article>
+          ))}
         </div>
 
         <p className="pricing-note">
