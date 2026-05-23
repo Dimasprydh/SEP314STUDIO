@@ -244,20 +244,6 @@ export default function Service() {
               </p>
             </div>
           </article>
-
-          <article className="pricing-card">
-            <span>CUSTOM REQUEST</span>
-
-            <div>
-              <h3>By brief and discussion</h3>
-
-              <p>
-                The final price will be shared after checking the brand brief,
-                reference, website scope, content, product amount, and features
-                needed.
-              </p>
-            </div>
-          </article>
         </div>
 
         <p className="pricing-note">
