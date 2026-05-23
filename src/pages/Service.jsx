@@ -246,7 +246,7 @@ export default function Service() {
           </article>
 
           <article className="pricing-card">
-            <span>FINAL QUOTE</span>
+            <span>CUSTOM REQUEST</span>
 
             <div>
               <h3>By brief and discussion</h3>
