@@ -206,26 +206,65 @@ export default function Service() {
         </div>
       </section>
 
-      <section className="service-cost">
-        <p className="service-label">ESTIMATION</p>
+      <section className="service-pricing">
+        <div className="service-pricing__header">
+          <p className="service-label">ESTIMATION</p>
 
-        <div className="service-cost__content">
-          <p>
-            Every website is quoted based on the brief, scope, platform, design
-            direction, pages, products, features, and timeline.
-          </p>
-
-          <p>
-            The project cost will be shared after understanding what needs to be
-            built, so the estimate stays fair for both the client and the work.
-          </p>
-
-          <span>
-            Platform costs such as Shopify plan, domain, hosting, paid apps,
-            payment gateway, shipping tools, or other third-party services are
-            handled separately by the client.
-          </span>
+          <h2>
+            Project cost depends on the platform, design direction, pages,
+            products, features, and timeline.
+          </h2>
         </div>
+
+        <div className="pricing-grid">
+          <article className="pricing-card">
+            <span>SHOPIFY / WORDPRESS / WOOCOMMERCE</span>
+
+            <div>
+              <h3>Rp1.000.000 to Rp7.000.000</h3>
+
+              <p>
+                For Shopify, WordPress, or WooCommerce websites. Suitable for
+                brand websites, online stores, product catalogs, landing pages,
+                and standard business websites.
+              </p>
+            </div>
+          </article>
+
+          <article className="pricing-card">
+            <span>CUSTOM CODED WEBSITE</span>
+
+            <div>
+              <h3>Starts from Rp5.000.000</h3>
+
+              <p>
+                For websites built outside of platforms using custom code. Final
+                estimation depends on the layout, pages, animation, CMS needs,
+                and technical complexity.
+              </p>
+            </div>
+          </article>
+
+          <article className="pricing-card">
+            <span>FINAL QUOTE</span>
+
+            <div>
+              <h3>By brief and discussion</h3>
+
+              <p>
+                The final price will be shared after checking the brand brief,
+                reference, website scope, content, product amount, and features
+                needed.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <p className="pricing-note">
+          Platform costs such as Shopify plan, domain, hosting, paid theme, paid
+          apps, payment gateway, shipping tools, or other third-party services
+          are not included in the development fee.
+        </p>
       </section>
 
       <section className="service-cta">
