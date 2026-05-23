@@ -49,7 +49,7 @@ export default function Service() {
           <div className="service-row__content">
             <h2>Shopify Website</h2>
             <p>
-              Shopify store setup, theme customization, product pages,
+              Shopify store setup, theme customization (HTML, CSS, JS, LIQUID  AND JSON), product pages,
               collections, cart, search, custom sections, payment setup
               guidance, shipping setup guidance, and launch preparation.
             </p>
