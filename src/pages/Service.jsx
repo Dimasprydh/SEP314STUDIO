@@ -16,9 +16,9 @@ export default function Service() {
           </h1>
 
           <p className="service-hero__text">
-             I design and build websites for brands, businesses, and independent
-  projects, whether it needs to be an online store, brand website,
-  portfolio, or a custom coded site built from scratch.
+            I design and build websites for brands, businesses, and independent
+            projects, whether it needs to be an online store, brand website,
+            portfolio, or a custom coded site built from scratch.
           </p>
         </div>
       </section>
@@ -49,9 +49,10 @@ export default function Service() {
           <div className="service-row__content">
             <h2>Shopify Website</h2>
             <p>
-              Shopify store setup, theme customization (HTML, CSS, JS, LIQUID  AND JSON), product pages,
-              collections, cart, search, custom sections, payment setup
-              guidance, shipping setup guidance, and launch preparation.
+              Shopify store setup, theme customization using HTML, CSS,
+              JavaScript, Liquid and JSON, product pages, collections, cart,
+              search, custom sections, payment setup guidance, shipping setup
+              guidance, and launch preparation.
             </p>
           </div>
         </div>
@@ -63,8 +64,8 @@ export default function Service() {
             <h2>WordPress / WooCommerce</h2>
             <p>
               Website or online store built with WordPress and WooCommerce for
-              brands that need a more familiar CMS, product catalog, blog, or
-              content based website.
+              brands that need a CMS, product catalog, blog, content based
+              website, or a familiar dashboard to manage their site.
             </p>
           </div>
         </div>
@@ -167,8 +168,8 @@ export default function Service() {
           </p>
 
           <p>
-            For Shopify or WooCommerce, the client will be able to manage
-            products, prices, stock, and orders from the dashboard. For custom
+            For Shopify or WooCommerce, the client can manage products, prices,
+            stock, orders, and selected content from the dashboard. For custom
             coded websites, the setup depends on the project scope and how the
             content needs to be managed.
           </p>
@@ -206,13 +207,25 @@ export default function Service() {
       </section>
 
       <section className="service-cost">
-        <p className="service-label">PROJECT COST</p>
+        <p className="service-label">ESTIMATION</p>
 
-        <p>
-          Pricing depends on the scope, platform, design direction, number of
-          pages, product setup, custom features, and timeline. Project
-          estimation will be shared after the brief is clear.
-        </p>
+        <div className="service-cost__content">
+          <p>
+            Every website is quoted based on the brief, scope, platform, design
+            direction, pages, products, features, and timeline.
+          </p>
+
+          <p>
+            The project cost will be shared after understanding what needs to be
+            built, so the estimate stays fair for both the client and the work.
+          </p>
+
+          <span>
+            Platform costs such as Shopify plan, domain, hosting, paid apps,
+            payment gateway, shipping tools, or other third-party services are
+            handled separately by the client.
+          </span>
+        </div>
       </section>
 
       <section className="service-cta">
