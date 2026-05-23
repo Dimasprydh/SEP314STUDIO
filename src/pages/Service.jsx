@@ -221,7 +221,7 @@ export default function Service() {
             <span>SHOPIFY / WORDPRESS / WOOCOMMERCE</span>
 
             <div>
-              <h3>Rp1.000.000 to Rp7.000.000</h3>
+              <h3>Starts from Rp800.000</h3>
 
               <p>
                 For Shopify, WordPress, or WooCommerce websites. Suitable for
