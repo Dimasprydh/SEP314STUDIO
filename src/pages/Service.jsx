@@ -9,12 +9,12 @@ const pricingPackages = [
     price: "Starts from Rp800.000",
     tag: "Shopify / WordPress / WooCommerce",
     features: [
-      "Shopify, WordPress, or WooCommerce setup",
-      "Homepage and core website pages",
-      "Product page or catalog structure",
-      "Mobile responsive layout",
-      "Payment and shipping setup guidance",
-      "Basic launch preparation",
+      "Website setup based on the selected platform",
+      "Homepage and key website pages",
+      "Product, catalog, or service page structure",
+      "Responsive layout for desktop and mobile",
+      "Basic payment and shipping setup guidance",
+      "Launch preparation before the website goes live",
     ],
   },
   {
@@ -22,12 +22,12 @@ const pricingPackages = [
     price: "Starts from Rp5.000.000",
     tag: "React / Vite / HTML / CSS / JS / PHP",
     features: [
-      "Website built outside of platforms",
+      "Website built with custom code",
       "Custom layout and page structure",
       "Brand website, portfolio, or campaign page",
       "Responsive front-end development",
       "Deployment setup and launch preparation",
-      "Final scope based on project complexity",
+      "Final scope depends on project complexity",
     ],
   },
 ];
@@ -237,13 +237,13 @@ export default function Service() {
 
       <section className="service-pricing">
         <div className="service-pricing__header">
-          <p className="service-label">ESTIMATION</p>
+          <p className="service-label">PRICING</p>
 
           <h2>Pricelist</h2>
 
           <p>
-            Project cost depends on the platform, design direction, pages,
-            products, features, and timeline.
+            Starting price for each website type. Final cost depends on the
+            scope, number of pages, platform, features, and timeline.
           </p>
         </div>
 
