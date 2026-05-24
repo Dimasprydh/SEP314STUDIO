@@ -253,10 +253,14 @@
 }
 
 .service-pricing__header {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 48px;
-  margin-bottom: 42px;
+  max-width: 900px;
+  margin: 0 auto 42px;
+  text-align: center;
+}
+
+.service-pricing__header .service-label {
+  display: block;
+  margin-bottom: 20px;
 }
 
 .service-pricing__header h2 {
@@ -269,8 +273,8 @@
 }
 
 .service-pricing__header p:last-child {
-  max-width: 720px;
-  margin: 22px 0 0;
+  max-width: 620px;
+  margin: 26px auto 0;
   color: rgba(232, 232, 232, 0.62);
   font-size: clamp(17px, 1.7vw, 24px);
   line-height: 1.15;
@@ -405,12 +409,13 @@
 
 .pricing-note {
   max-width: 880px;
-  margin: 28px 0 0 auto;
+  margin: 28px auto 0;
   color: rgba(232, 232, 232, 0.58);
   font-size: clamp(15px, 1.5vw, 20px);
   line-height: 1.28;
   letter-spacing: -0.035em;
   font-weight: 500;
+  text-align: center;
 }
 
 .service-cta {
@@ -470,8 +475,7 @@
 
   .service-overview,
   .service-scope__header,
-  .service-note,
-  .service-pricing__header {
+  .service-note {
     grid-template-columns: 1fr;
     gap: 24px;
   }
@@ -494,10 +498,6 @@
 
   .pricing-card {
     min-height: 500px;
-  }
-
-  .pricing-note {
-    margin-left: 0;
   }
 
   .service-cta {
