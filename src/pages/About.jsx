@@ -87,7 +87,14 @@ export default function About() {
             >
               Instagram
             </a>
-          
+            <span>—</span>
+           <a
+              href="https://www.linkedin.com/in/dimasprydh/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Linkedin
+            </a>
           </div>
 
           <div className="about__sections">
