@@ -34,12 +34,11 @@
 /* ===== LEFT: video ===== */
 .about__figure {
   margin: 0;
-  width: min(680px, 90%);
+  width: 100%; /* UBAH: Biarkan mengisi penuh grid kiri supaya besar di dekstop */
   border: 2px solid var(--ink);
   position: relative;
   background: #000;
-  /* SOLUSI UTAMA: Container Query agar font bisa menyesuaikan ukuran video */
-  container-type: inline-size; 
+  container-type: inline-size; /* Biar font di video otomatis menyesuaikan */
 }
 
 .about__videoShell {
@@ -73,7 +72,7 @@
   left: clamp(12px, 2vw, 20px);
   right: clamp(12px, 2vw, 20px);
   top: clamp(12px, 2vw, 20px);
-  max-width: 100%; /* Gunakan penuh lebar container */
+  max-width: 100%;
 }
 
 .about__name {
@@ -82,7 +81,6 @@
   font-weight: 800;
   opacity: 0.9;
   color: #2563eb;
-  /* Ukuran font otomatis mengikuti lebar video */
   font-size: clamp(16px, 4cqi, 34px); 
 }
 
@@ -95,8 +93,7 @@
     Roboto, Arial, sans-serif;
   overflow-wrap: break-word;
   word-break: break-word;
-  /* Ukuran font otomatis mengikuti lebar video agar pas dan rapi */
-  font-size: clamp(14px, 5cqi, 42px); 
+  font-size: clamp(14px, 5cqi, 48px); /* Ukuran font otomatis mengikuti video */
 }
 .about__ledeBig strong {
   font-weight: 900;
@@ -107,7 +104,7 @@
   position: relative;
 }
 
-/* ------ CONTACT (Desktop: Horizontal, Mobile: Vertikal) ------ */
+/* ------ CONTACT (Desktop: Horizontal, Mobile: 2 Baris) ------ */
 .about__contact {
   display: flex;
   flex-wrap: wrap;
@@ -206,13 +203,15 @@
     width: 100%;
   }
 
-  /* Contact berubah menjadi vertikal: Judul di atas, links di bawah */
+  /* Contact: Judul di baris atas, Link memanjang di baris bawahnya */
   .about__contact {
-    flex-direction: column;
+    flex-direction: row; 
+    flex-wrap: wrap;     
     align-items: flex-start;
-    gap: 2px 0;
+    gap: 4px 8px;
   }
   .about__contact h2 {
+    width: 100%; /* Memaksa Contact ke baris sendiri */
     margin: 0 0 4px 0;
     font-size: 16px;
   }
@@ -223,7 +222,6 @@
     margin: 0 4px;
   }
 
-  /* Atur jarak pinggir overlay di Tablet */
   .about__overlay {
     left: clamp(14px, 3vw, 24px);
     right: clamp(14px, 3vw, 24px);
@@ -242,10 +240,6 @@
 
 /* Mobile kecil (lebar < 600px) */
 @media (max-width: 600px) {
-  /* Contact text sedikit diperkecil */
-  .about__contact {
-    gap: 2px 0;
-  }
   .about__contact h2 {
     font-size: 14px;
   }
@@ -291,12 +285,8 @@
 
 /* Mobile sangat kecil (< 400px) */
 @media (max-width: 400px) {
-  .about__contact {
-    gap: 2px 0;
-  }
   .about__contact h2 {
     font-size: 13px;
-    margin-right: 0;
   }
   .about__contact a {
     font-size: 13px;
