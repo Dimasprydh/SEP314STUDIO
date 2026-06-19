@@ -55,14 +55,15 @@ export default function About() {
               />
             </div>
 
-            {/* OVERLAY teks besar */}
+            {/* OVERLAY teks besar — terkunci di dalam figure */}
             <div className="about__overlay">
               <h1 className="about__name">SEP314STUDIO</h1>
               <p className="about__ledeBig">
-                is a Jakarta-based digital studio specializing in full-stack web
+                is a Jakarta based digital studio specializing in full-stack web
                 development, by Dimasprydh. I design and build fast, readable
                 websites aligned to your brand using Shopify (Liquid),
-                React/Vite, PHP, and modern HTML/CSS/JS. From <strong>VSCODE</strong> concept to <strong>production</strong>.
+                React/Vite, PHP, and modern HTML/CSS/JS. From{" VSCODE "}
+                <strong>concept</strong> to <strong>production</strong>.
               </p>
             </div>
 
@@ -74,11 +75,12 @@ export default function About() {
 
         {/* KANAN — contact + sections */}
         <section className="col col--right">
+          {/* Contact horizontal: desktop di samping kanan, mobile di bawah video */}
           <div className="about__contact">
             <h2>Contact</h2>
-            <a href="mailto:hello@sept314studio.com">sep314studio@gmail.com</a>
+            <a href="mailto:sep314studio@gmail.com">sep314studio@gmail.com</a>
             <span className="sep">—</span>
-            <a
+            
               href="https://instagram.com/sep314studio"
               target="_blank"
               rel="noreferrer"
@@ -86,7 +88,7 @@ export default function About() {
               Instagram
             </a>
             <span className="sep">—</span>
-            <a
+            
               href="https://www.linkedin.com/in/dimasprydh/"
               target="_blank"
               rel="noreferrer"
@@ -117,7 +119,7 @@ export default function About() {
               <ul className="list list--timeline">
                 <li>
                   <b>2025 — Now</b>
-                  <a
+                  
                     href="https://onionwrks.com/"
                     target="_blank"
                     rel="noreferrer"
@@ -128,7 +130,7 @@ export default function About() {
                 </li>
                 <li>
                   <b>2024 — Now</b>
-                  <a
+                  
                     href="https://www.scoreoffscoot.com/"
                     target="_blank"
                     rel="noreferrer"
@@ -139,7 +141,7 @@ export default function About() {
                 </li>
                 <li>
                   <b>2024 — Now</b>
-                  <a
+                  
                     href="https://www.roomforair.com/"
                     target="_blank"
                     rel="noreferrer"
@@ -150,7 +152,7 @@ export default function About() {
                 </li>
                 <li>
                   <b>2024 — Now</b>
-                  <a
+                  
                     href="https://mediocreq.com/"
                     target="_blank"
                     rel="noreferrer"
@@ -161,7 +163,7 @@ export default function About() {
                 </li>
                 <li>
                   <b>2018 — 2019</b>
-                  <a
+                  
                     href="https://www.doktermobil.com/"
                     target="_blank"
                     rel="noreferrer"
@@ -176,7 +178,7 @@ export default function About() {
             <section className="about__section">
               <h3>Certificate</h3>
               <ul className="list list--bullets">
-                <a
+                
                   href="https://www.udemy.com/certificate/UC-7551c843-ddea-44c0-ad36-8b703e8abf3b/"
                   target="_blank"
                   rel="noreferrer"
