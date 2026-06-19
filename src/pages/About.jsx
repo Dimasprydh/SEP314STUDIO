@@ -81,7 +81,7 @@ export default function About() {
           <div className="about__contact">
             <h2>Contact</h2>
             <a href="mailto:sep314studio@gmail.com">
-              sep314studio@gmail.com
+              Sep314studio@gmail.com
             </a>
             <span className="sep">—</span>
             <a
