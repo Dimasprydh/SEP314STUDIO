@@ -63,7 +63,7 @@
   background: transparent;
 }
 
-/* Overlay teks di atas video */
+/* ===== OVERLAY TEKS (desktop & dasar) ===== */
 .about__overlay {
   position: absolute;
   z-index: 3;
@@ -101,7 +101,7 @@
   position: relative;
 }
 
-/* ------ CONTACT (FIX: flex-wrap agar turun di mobile) ------ */
+/* ------ CONTACT (flex-wrap) ------ */
 .about__contact {
   display: flex;
   flex-wrap: wrap;
@@ -187,11 +187,8 @@
   border: 0;
 }
 
-/* =============================================================
-   RESPONSIVE
-   ============================================================= */
 
-/* Tablet & mobile (lebar < 960px) */
+/* Tablet (960px ke bawah) */
 @media (max-width: 960px) {
   .about__wrap {
     grid-template-columns: 1fr;
@@ -201,13 +198,44 @@
   }
   .about__overlay {
     right: clamp(10px, 6vw, 36px);
-    max-width: 40ch;
+    max-width: 40ch; /* sedikit lebih longgar di tablet */
   }
 }
 
-/* Mobile kecil (lebar < 600px) – FIX utama untuk kontak & timeline */
-@media (max-width: 600px) {
-  /* Contact: lebih rapat & fleksibel */
+/* Mobile (lebar < 700px) – saya tambahkan breakpoint baru agar transisi lebih halus */
+@media (max-width: 700px) {
+  .about__overlay {
+    left: clamp(12px, 3vw, 20px);
+    right: clamp(12px, 3vw, 20px);
+    top: clamp(12px, 3vw, 20px);
+    max-width: 42ch; /* lebih lebar dari sebelumnya (30ch) agar seperti desktop */
+  }
+  .about__ledeBig {
+    font-size: clamp(22px, 5vw, 32px); /* ukuran lebih besar, tidak mengecil berlebihan */
+    line-height: 1.1;
+  }
+  .about__name {
+    font-size: clamp(20px, 4vw, 26px); /* lebih besar */
+    margin-bottom: 8px;
+  }
+}
+
+/* Mobile kecil (lebar < 480px) – tetap jaga proporsi */
+@media (max-width: 480px) {
+  .about__overlay {
+    max-width: 36ch; /* masih lebih longgar dari 30ch */
+    left: clamp(10px, 2.5vw, 14px);
+    right: clamp(10px, 2.5vw, 14px);
+    top: clamp(10px, 2.5vw, 14px);
+  }
+  .about__ledeBig {
+    font-size: clamp(20px, 5.5vw, 28px);
+  }
+  .about__name {
+    font-size: clamp(18px, 4.5vw, 24px);
+  }
+
+  /* Tetap pertahankan perbaikan contact dan timeline seperti sebelumnya */
   .about__contact {
     gap: 4px 8px;
     font-size: 14px;
@@ -219,8 +247,6 @@
   .about__contact .sep {
     margin: 0 1px;
   }
-
-  /* Timeline: tahun di atas, konten di bawah */
   .list--timeline li {
     grid-template-columns: 1fr;
     gap: 2px;
@@ -235,27 +261,9 @@
   .list--timeline em {
     font-size: 12px;
   }
-
-  /* Overlay teks agar tidak terlalu lebar */
-  .about__overlay {
-    max-width: 30ch;
-    left: clamp(6px, 2vw, 10px);
-    right: clamp(6px, 3vw, 14px);
-    top: clamp(6px, 2vw, 10px);
-  }
-  .about__ledeBig {
-    font-size: clamp(18px, 5.5vw, 28px);
-  }
-  .about__name {
-    font-size: clamp(14px, 3.5vw, 18px);
-  }
-
-  /* Section heading lebih kecil */
   .about__section h3 {
     font-size: 13px;
   }
-
-  /* Bullet list lebih rapat */
   .list--bullets {
     padding-left: 14px;
   }
@@ -265,8 +273,20 @@
   }
 }
 
-/* Mobile sangat kecil (< 400px) – extra polish */
-@media (max-width: 400px) {
+/* Mobile sangat kecil (< 380px) – tetap proporsional */
+@media (max-width: 380px) {
+  .about__overlay {
+    max-width: 32ch;
+    left: 8px;
+    right: 8px;
+    top: 8px;
+  }
+  .about__ledeBig {
+    font-size: clamp(18px, 5vw, 24px);
+  }
+  .about__name {
+    font-size: clamp(16px, 4vw, 20px);
+  }
   .about__contact {
     font-size: 13px;
     gap: 2px 6px;
@@ -274,11 +294,5 @@
   .about__contact h2 {
     font-size: 13px;
     margin-right: 4px;
-  }
-  .about__overlay {
-    max-width: 26ch;
-  }
-  .about__ledeBig {
-    font-size: clamp(16px, 5vw, 22px);
   }
 }
