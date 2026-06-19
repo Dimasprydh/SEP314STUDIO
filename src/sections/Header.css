@@ -6,7 +6,7 @@
 }
 
 .site-header {
-  position: fixed;          /* ikut scroll, selalu di atas */
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -16,7 +16,6 @@
   transition: box-shadow 0.25s ease;
 }
 
-/* shadow muncul saat user sudah scroll */
 .site-header.scrolled {
   box-shadow: 0 1px 0 var(--line), 0 4px 24px rgba(0, 0, 0, 0.6);
 }
@@ -46,13 +45,9 @@
   text-decoration: none;
   font-weight: 700;
 }
-.brand:hover {
-  text-decoration: underline;
-}
+.brand:hover { text-decoration: underline; }
 
-.muted {
-  color: var(--ink-dim);
-}
+.muted { color: var(--ink-dim); }
 
 /* WIB ticker */
 .wib-ticker {
@@ -73,15 +68,10 @@
   transform: translateY(2px);
   animation: blink 1s steps(1) infinite;
 }
-@keyframes blink {
-  50% { opacity: 0; }
-}
+@keyframes blink { 50% { opacity: 0; } }
 
 /* nav desktop */
-.nav {
-  display: flex;
-  gap: 16px;
-}
+.nav { display: flex; gap: 16px; }
 .nav__link {
   position: relative;
   color: var(--ink);
@@ -89,13 +79,7 @@
   padding: 4px 2px;
   outline: none;
 }
-.nav__link:hover {
-  text-decoration: underline;
-}
-.nav__link.active,
-.nav__link[aria-current="page"] {
-  text-decoration: none;
-}
+.nav__link:hover { text-decoration: underline; }
 .nav__link.active::after,
 .nav__link[aria-current="page"]::after {
   content: "";
@@ -107,7 +91,7 @@
   background: var(--ink);
 }
 
-/* fokus aksesibilitas */
+/* fokus */
 .nav__link:focus-visible,
 .brand:focus-visible,
 .drawer__link:focus-visible,
@@ -116,7 +100,7 @@
   outline-offset: 2px;
 }
 
-/* hamburger button */
+/* hamburger */
 .menu-btn {
   display: none;
   width: 36px;
@@ -126,6 +110,7 @@
   border: 0;
   cursor: pointer;
   position: relative;
+  z-index: 102; /* selalu di atas overlay */
 }
 .menu-btn span {
   position: absolute;
@@ -139,38 +124,35 @@
 .menu-btn span:nth-child(1) { top: 6px; }
 .menu-btn span:nth-child(2) { top: 13px; }
 .menu-btn span:nth-child(3) { top: 20px; }
-.menu-btn.is-open span:nth-child(1) {
-  top: 13px;
-  transform: rotate(45deg);
-}
+.menu-btn.is-open span:nth-child(1) { top: 13px; transform: rotate(45deg); }
 .menu-btn.is-open span:nth-child(2) { opacity: 0; }
-.menu-btn.is-open span:nth-child(3) {
-  top: 13px;
-  transform: rotate(-45deg);
-}
+.menu-btn.is-open span:nth-child(3) { top: 13px; transform: rotate(-45deg); }
 
 /* =============================================
-   OVERLAY GELAP — backdrop saat drawer terbuka
+   OVERLAY — full screen, di belakang drawer
    ============================================= */
 .drawer-overlay {
   position: fixed;
-  inset: 0;
-  top: var(--header-h, 50px);
-  z-index: 98;                          /* di bawah drawer (99) & header (100) */
-  background: rgba(0, 0, 0, 0.45);     /* gelap tapi tidak terlalu pekat */
-  backdrop-filter: blur(2px);          /* sedikit blur biar elegan */
-  -webkit-backdrop-filter: blur(2px);
+  top: 0;           /* dari pojok paling atas layar */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 98;      /* header=100, drawer=99, overlay=98 */
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   opacity: 0;
-  transition: opacity 0.25s ease;
-  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.28s ease, visibility 0.28s ease;
+  cursor: pointer;  /* klik overlay = tutup drawer */
 }
 .drawer-overlay.show {
   opacity: 1;
-  pointer-events: auto;
+  visibility: visible;
 }
 
 /* =============================================
-   DRAWER — fixed overlay, tidak mendorong konten
+   DRAWER
    ============================================= */
 .drawer {
   position: fixed;
@@ -180,14 +162,16 @@
   z-index: 99;
   background: var(--paper);
   border-bottom: 1px solid var(--line);
-  transform: translateY(-6px);
+  transform: translateY(-8px);
   opacity: 0;
-  transition: transform 0.22s ease, opacity 0.22s ease;
+  visibility: hidden;
+  transition: transform 0.22s ease, opacity 0.22s ease, visibility 0.22s ease;
   pointer-events: none;
 }
 .drawer.show {
   transform: translateY(0);
   opacity: 1;
+  visibility: visible;
   pointer-events: auto;
 }
 .drawer__link {
@@ -197,9 +181,7 @@
   padding: 14px 24px;
   border-top: 1px solid var(--line);
 }
-.drawer__link:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
+.drawer__link:hover { background: rgba(255, 255, 255, 0.06); }
 
 /* =============================================
    RESPONSIVE
@@ -209,7 +191,6 @@
   .menu-btn { display: inline-block; }
 }
 
-/* WIB ticker kecil di layar ≤ 450px */
 @media (max-width: 450px) {
   .wib-ticker {
     font-size: clamp(10px, 3vw, 13px);
@@ -219,7 +200,5 @@
     width: 6px;
     margin-left: 4px;
   }
-  .bar {
-    padding: 12px 16px;
-  }
+  .bar { padding: 12px 16px; }
 }
