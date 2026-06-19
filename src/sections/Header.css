@@ -6,11 +6,19 @@
 }
 
 .site-header {
-  position: sticky;
+  position: fixed;          /* ikut scroll, selalu di atas */
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
   background: var(--paper);
   color: #fff;
+  transition: box-shadow 0.25s ease;
+}
+
+/* shadow muncul saat user sudah scroll */
+.site-header.scrolled {
+  box-shadow: 0 1px 0 var(--line), 0 4px 24px rgba(0, 0, 0, 0.6);
 }
 
 .bar {
@@ -142,30 +150,48 @@
 }
 
 /* =============================================
-   DRAWER — fixed overlay, TIDAK mendorong konten
+   OVERLAY GELAP — backdrop saat drawer terbuka
+   ============================================= */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  top: var(--header-h, 50px);
+  z-index: 98;                          /* di bawah drawer (99) & header (100) */
+  background: rgba(0, 0, 0, 0.45);     /* gelap tapi tidak terlalu pekat */
+  backdrop-filter: blur(2px);          /* sedikit blur biar elegan */
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.drawer-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* =============================================
+   DRAWER — fixed overlay, tidak mendorong konten
    ============================================= */
 .drawer {
-  display: none;
-  position: fixed;          /* keluar dari flow dokumen */
-  top: var(--header-h, 50px); /* tepat di bawah bar */
+  position: fixed;
+  top: var(--header-h, 50px);
   left: 0;
   right: 0;
-  z-index: 99;              /* di bawah header (z-index 100) tapi di atas konten */
+  z-index: 99;
   background: var(--paper);
   border-bottom: 1px solid var(--line);
-  /* animasi slide-down */
-  transform: translateY(-8px);
+  transform: translateY(-6px);
   opacity: 0;
   transition: transform 0.22s ease, opacity 0.22s ease;
   pointer-events: none;
 }
 .drawer.show {
-  display: grid;
   transform: translateY(0);
   opacity: 1;
   pointer-events: auto;
 }
 .drawer__link {
+  display: block;
   color: #fff;
   text-decoration: none;
   padding: 14px 24px;
