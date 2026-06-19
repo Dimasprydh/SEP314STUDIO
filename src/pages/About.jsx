@@ -55,7 +55,7 @@ export default function About() {
               />
             </div>
 
-            {/* OVERLAY teks besar — terkunci di dalam figure */}
+            {/* OVERLAY teks besar */}
             <div className="about__overlay">
               <h1 className="about__name">SEP314STUDIO</h1>
               <p className="about__ledeBig">
@@ -75,7 +75,6 @@ export default function About() {
 
         {/* KANAN — contact + sections */}
         <section className="col col--right">
-          {/* Contact horizontal: desktop di samping kanan, mobile di bawah video */}
           <div className="about__contact">
             <h2>Contact</h2>
             <a href="mailto:sep314studio@gmail.com">sep314studio@gmail.com</a>
@@ -119,58 +118,48 @@ export default function About() {
               <ul className="list list--timeline">
                 <li>
                   <b>2025 — Now</b>
-                  
-                    href="https://onionwrks.com/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <span>Onion Works</span>
-                  </a>
-                  <em>Web Designer & Developer</em>
+                  <span>
+                    <a href="https://onionwrks.com/" target="_blank" rel="noreferrer">
+                      Onion Works
+                    </a>
+                  </span>
+                  <em>Web Designer &amp; Developer</em>
                 </li>
                 <li>
                   <b>2024 — Now</b>
-                  
-                    href="https://www.scoreoffscoot.com/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <span>Socre Off Scoot and Fittyandco</span>
-                  </a>
-                  <em>Web Designer & Developer</em>
+                  <span>
+                    <a href="https://www.scoreoffscoot.com/" target="_blank" rel="noreferrer">
+                      Socre Off Scoot and Fittyandco
+                    </a>
+                  </span>
+                  <em>Web Designer &amp; Developer</em>
                 </li>
                 <li>
                   <b>2024 — Now</b>
-                  
-                    href="https://www.roomforair.com/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <span>Room For Air</span>
-                  </a>
-                  <em>Web Designer & Developer</em>
+                  <span>
+                    <a href="https://www.roomforair.com/" target="_blank" rel="noreferrer">
+                      Room For Air
+                    </a>
+                  </span>
+                  <em>Web Designer &amp; Developer</em>
                 </li>
                 <li>
                   <b>2024 — Now</b>
-                  
-                    href="https://mediocreq.com/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <span>Mediocre</span>
-                  </a>
-                  <em>Web Designer & Developer</em>
+                  <span>
+                    <a href="https://mediocreq.com/" target="_blank" rel="noreferrer">
+                      Mediocre
+                    </a>
+                  </span>
+                  <em>Web Designer &amp; Developer</em>
                 </li>
                 <li>
                   <b>2018 — 2019</b>
-                  
-                    href="https://www.doktermobil.com/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <span>Dokter Mobil Indonesia</span>
-                  </a>
-                  <em>Data Analyst & Video Editor</em>
+                  <span>
+                    <a href="https://www.doktermobil.com/" target="_blank" rel="noreferrer">
+                      Dokter Mobil Indonesia
+                    </a>
+                  </span>
+                  <em>Data Analyst &amp; Video Editor</em>
                 </li>
               </ul>
             </section>
@@ -178,13 +167,15 @@ export default function About() {
             <section className="about__section">
               <h3>Certificate</h3>
               <ul className="list list--bullets">
-                
-                  href="https://www.udemy.com/certificate/UC-7551c843-ddea-44c0-ad36-8b703e8abf3b/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <li>2023 — Learn Figma - UI/UX Design Essential Training</li>
-                </a>
+                <li>
+                  
+                    href="https://www.udemy.com/certificate/UC-7551c843-ddea-44c0-ad36-8b703e8abf3b/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    2023 — Learn Figma - UI/UX Design Essential Training
+                  </a>
+                </li>
               </ul>
             </section>
           </div>
