@@ -38,7 +38,8 @@
   border: 2px solid var(--ink);
   position: relative;
   background: #000;
-  overflow: hidden; /* mencegah teks keluar dari video */
+  /* HAPUS overflow:hidden agar teks tidak terpotong */
+  /* overflow: hidden; */
 }
 
 .about__videoShell {
@@ -69,15 +70,15 @@
   position: absolute;
   z-index: 3;
   pointer-events: none;
-  left: clamp(10px, 2vw, 16px);
-  right: clamp(10px, 4vw, 28px);
-  top: clamp(10px, 2vw, 16px);
-  max-width: 38ch;
+  left: clamp(12px, 2.5vw, 20px);
+  right: clamp(12px, 2.5vw, 20px);
+  top: clamp(12px, 2.5vw, 20px);
+  max-width: 42ch; /* lebih longgar */
 }
 
 .about__name {
   margin: 0 0 6px;
-  font-size: clamp(18px, 2vw, 22px);
+  font-size: clamp(20px, 2.2vw, 26px);
   letter-spacing: 0.02em;
   font-weight: 800;
   opacity: 0.9;
@@ -86,13 +87,13 @@
 
 .about__ledeBig {
   margin: 0;
-  line-height: 1.08;
-  font-size: clamp(22px, 4.4vw, 48px);
+  line-height: 1.1;
+  font-size: clamp(24px, 4.8vw, 52px);
   color: var(--accent);
   font-weight: 800;
   font-family: "NetworkFree", "Inter", system-ui, -apple-system, Segoe UI,
     Roboto, Arial, sans-serif;
-  overflow-wrap: break-word; /* paksa wrap kata panjang */
+  overflow-wrap: break-word;
   word-break: break-word;
 }
 .about__ledeBig strong {
@@ -104,7 +105,7 @@
   position: relative;
 }
 
-/* ------ CONTACT (default: horizontal) ------ */
+/* ------ CONTACT (horizontal dengan wrap) ------ */
 .about__contact {
   display: flex;
   flex-wrap: wrap;
@@ -202,37 +203,68 @@
   .about__figure {
     width: 100%;
   }
+
+  /* Overlay: sedikit lebih longgar dan font menyesuaikan */
   .about__overlay {
-    right: clamp(10px, 6vw, 36px);
-    max-width: 40ch;
+    left: clamp(14px, 3vw, 24px);
+    right: clamp(14px, 3vw, 24px);
+    top: clamp(14px, 3vw, 24px);
+    max-width: 46ch;
+  }
+  .about__ledeBig {
+    font-size: clamp(28px, 5vw, 40px);
+  }
+  .about__name {
+    font-size: clamp(22px, 3vw, 28px);
   }
 
-  /* --- CONTACT: ubah menjadi vertikal --- */
+  /* Contact: tetap horizontal, perkecil gap dan font jika perlu */
   .about__contact {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px 0;
+    gap: 4px 10px;
   }
   .about__contact h2 {
-    margin-bottom: 4px;
-  }
-  .about__contact .sep {
-    display: none; /* sembunyikan separator "—" */
+    font-size: 15px;
+    margin-right: 8px;
   }
   .about__contact a {
-    white-space: normal; /* biarkan wrap jika perlu */
+    font-size: 15px;
   }
 }
 
-/* Mobile kecil (lebar < 600px) – perbaikan tambahan */
+/* Mobile sedang (lebar < 700px) */
+@media (max-width: 700px) {
+  .about__overlay {
+    left: clamp(12px, 2.5vw, 18px);
+    right: clamp(12px, 2.5vw, 18px);
+    top: clamp(12px, 2.5vw, 18px);
+    max-width: 42ch;
+  }
+  .about__ledeBig {
+    font-size: clamp(24px, 5.5vw, 34px);
+  }
+  .about__name {
+    font-size: clamp(20px, 3.5vw, 26px);
+  }
+}
+
+/* Mobile kecil (lebar < 600px) */
 @media (max-width: 600px) {
-  /* Contact: sudah vertikal, hanya ukuran font */
+  /* Contact: tetap horizontal, perkecil agar muat */
   .about__contact {
+    gap: 4px 8px;
     font-size: 14px;
   }
   .about__contact h2 {
     font-size: 14px;
-    margin-right: 0;
+    margin-right: 6px;
+  }
+  .about__contact a {
+    font-size: 14px;
+    white-space: nowrap; /* tetap satu baris */
+  }
+  .about__contact .sep {
+    display: inline; /* tetap tampil */
+    margin: 0 2px;
   }
 
   /* Timeline: tahun di atas, konten di bawah */
@@ -251,18 +283,20 @@
     font-size: 12px;
   }
 
-  /* Overlay teks agar tidak terlalu lebar */
+  /* Overlay: perkecil font agar semua teks terlihat */
   .about__overlay {
-    max-width: 30ch;
-    left: clamp(6px, 2vw, 10px);
-    right: clamp(6px, 3vw, 14px);
-    top: clamp(6px, 2vw, 10px);
+    max-width: 38ch;
+    left: clamp(10px, 2vw, 14px);
+    right: clamp(10px, 2vw, 14px);
+    top: clamp(10px, 2vw, 14px);
   }
   .about__ledeBig {
-    font-size: clamp(18px, 5.5vw, 28px);
+    font-size: clamp(20px, 5vw, 28px);
+    line-height: 1.1;
   }
   .about__name {
-    font-size: clamp(14px, 3.5vw, 18px);
+    font-size: clamp(18px, 4vw, 24px);
+    margin-bottom: 4px;
   }
 
   /* Section heading lebih kecil */
@@ -280,18 +314,29 @@
   }
 }
 
-/* Mobile sangat kecil (< 400px) – extra polish */
+/* Mobile sangat kecil (< 400px) */
 @media (max-width: 400px) {
   .about__contact {
     font-size: 13px;
+    gap: 2px 6px;
   }
   .about__contact h2 {
     font-size: 13px;
+    margin-right: 4px;
+  }
+  .about__contact a {
+    font-size: 13px;
   }
   .about__overlay {
-    max-width: 26ch;
+    max-width: 34ch;
+    left: clamp(8px, 2vw, 12px);
+    right: clamp(8px, 2vw, 12px);
+    top: clamp(8px, 2vw, 12px);
   }
   .about__ledeBig {
-    font-size: clamp(16px, 5vw, 22px);
+    font-size: clamp(18px, 5vw, 24px);
+  }
+  .about__name {
+    font-size: clamp(16px, 4vw, 20px);
   }
 }
