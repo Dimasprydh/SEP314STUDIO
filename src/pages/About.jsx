@@ -55,7 +55,7 @@ export default function About() {
               />
             </div>
 
-            {/* OVERLAY teks besar (Sudah dirapikan kalimatnya) */}
+            {/* OVERLAY teks besar */}
             <div className="about__overlay">
               <h1 className="about__name">SEP314STUDIO</h1>
               <p className="about__ledeBig">
