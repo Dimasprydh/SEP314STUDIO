@@ -4,8 +4,7 @@ import "./about.css";
 import { asset } from "../utils/asset";
 
 export default function About() {
-  // figure mengikuti rasio asli video
-  const [ratio, setRatio] = useState(3 / 4); // default portrait
+  const [ratio, setRatio] = useState(3 / 4);
   const vRef = useRef(null);
 
   const onMeta = useCallback(() => {
@@ -18,13 +17,12 @@ export default function About() {
   return (
     <div className="about">
       <div className="about__wrap">
-        {/* KIRI — lede besar overlap di atas video */}
+        {/* KIRI — video + overlay */}
         <section className="col col--left">
           <figure
             className="about__figure about__figure--video"
             style={{ aspectRatio: ratio }}
           >
-            {/* Video */}
             <div
               className="about__videoShell"
               onContextMenu={(e) => e.preventDefault()}
@@ -45,10 +43,11 @@ export default function About() {
                 tabIndex={-1}
                 onLoadedMetadata={onMeta}
               >
-                {/* pakai mp4 utama; mov sebagai fallback kalau perlu */}
-               <source src={asset("assets/about-image-video/profile.mp4")} type="video/mp4" />
+                <source
+                  src={asset("assets/about-image-video/profile.mp4")}
+                  type="video/mp4"
+                />
               </video>
-              {/* shield transparan: blok klik kanan/drag */}
               <div
                 className="about__shield"
                 onContextMenu={(e) => e.preventDefault()}
@@ -56,7 +55,7 @@ export default function About() {
               />
             </div>
 
-            {/* OVERLAY teks besar (menutupi ± setengah bagian atas video) */}
+            {/* OVERLAY teks besar */}
             <div className="about__overlay">
               <h1 className="about__name">SEP314STUDIO</h1>
               <p className="about__ledeBig">
@@ -74,12 +73,12 @@ export default function About() {
           </figure>
         </section>
 
-        {/* KANAN — contact + sections (tetap sederhana) */}
+        {/* KANAN — contact + sections */}
         <section className="col col--right">
           <div className="about__contact">
             <h2>Contact</h2>
             <a href="mailto:hello@sept314studio.com">sep314studio@gmail.com</a>
-            <span>—</span>
+            <span className="sep">—</span>
             <a
               href="https://instagram.com/sep314studio"
               target="_blank"
@@ -87,8 +86,8 @@ export default function About() {
             >
               Instagram
             </a>
-            <span>—</span>
-           <a
+            <span className="sep">—</span>
+            <a
               href="https://www.linkedin.com/in/dimasprydh/"
               target="_blank"
               rel="noreferrer"
@@ -104,18 +103,13 @@ export default function About() {
                 <li>
                   <b>2019 — 2023</b>
                   <span>Computer Science</span>
-                  <em>Binus University - Bachelor's Degree </em>
+                  <em>Binus University - Bachelor's Degree</em>
                 </li>
                 <li>
                   <b>2013 — 2019</b>
                   <span>Computer and Network Engineering</span>
                   <em>Perguruan Cikini - Vocational High School</em>
                 </li>
-                {/* <li>
-                  <b>2017</b>
-                  <span>IELTS / English Certification</span>
-                  <em>British Council</em>
-                </li> */}
               </ul>
             </section>
 
