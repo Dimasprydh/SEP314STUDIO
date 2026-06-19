@@ -38,7 +38,7 @@
   border: 2px solid var(--ink);
   position: relative;
   background: #000;
-  overflow: hidden; /* penting agar teks tidak keluar dari video */
+  overflow: hidden;
 }
 
 .about__videoShell {
@@ -50,6 +50,7 @@
   user-select: none;
   -webkit-touch-callout: none;
 }
+
 .about__video {
   width: 100%;
   height: 100%;
@@ -58,6 +59,7 @@
   background: #000;
   pointer-events: none;
 }
+
 .about__shield {
   position: absolute;
   inset: 0;
@@ -72,8 +74,8 @@
   left: clamp(10px, 2vw, 18px);
   right: clamp(10px, 2vw, 18px);
   top: clamp(10px, 2vw, 18px);
-  bottom: clamp(10px, 2vw, 18px); /* batas bawah agar tidak overflow */
-  overflow: hidden;               /* potong jika tetap meluber */
+  bottom: clamp(10px, 2vw, 18px);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -101,6 +103,7 @@
   word-break: break-word;
   overflow: hidden;
 }
+
 .about__ledeBig strong {
   font-weight: 900;
 }
@@ -120,19 +123,23 @@
   border-bottom: 1px solid var(--line);
   padding-bottom: 10px;
 }
+
 .about__contact h2 {
   font-size: 16px;
   margin: 0 10px 0 0;
 }
+
 .about__contact a {
   color: var(--ink);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   white-space: nowrap;
 }
+
 .about__contact a:hover {
   border-color: var(--ink);
 }
+
 .about__contact .sep {
   opacity: 0.4;
   user-select: none;
@@ -143,6 +150,7 @@
   display: grid;
   gap: 26px;
 }
+
 .about__section h3 {
   color: var(--ink);
   font-size: 14px;
@@ -156,6 +164,7 @@
   padding: 0;
   list-style: none;
 }
+
 .list--timeline li {
   display: grid;
   grid-template-columns: 110px 1fr;
@@ -163,22 +172,27 @@
   padding: 7px 0;
   border-bottom: 1px dashed var(--line);
 }
+
 .list--timeline li:last-child {
   border-bottom: 0;
 }
+
 .list--timeline b {
   font-weight: 800;
   opacity: 0.9;
 }
+
 .list--timeline em {
   opacity: 0.72;
   font-style: normal;
   font-size: 12px;
 }
+
 .list--bullets {
   list-style: disc;
   padding-left: 18px;
 }
+
 .list--bullets li {
   margin: 6px 0;
   padding-left: 2px;
@@ -200,7 +214,7 @@
    RESPONSIVE
    ============================================================= */
 
-/* Tablet & mobile (lebar ≤ 960px) — layout jadi 1 kolom */
+/* Tablet & mobile (≤ 960px) — layout jadi 1 kolom */
 @media (max-width: 960px) {
   .about__wrap {
     grid-template-columns: 1fr;
@@ -208,8 +222,6 @@
   .about__figure {
     width: 100%;
   }
-
-  /* Overlay menyesuaikan, teks tetap di dalam video */
   .about__overlay {
     left: clamp(10px, 2.5vw, 18px);
     right: clamp(10px, 2.5vw, 18px);
@@ -222,8 +234,6 @@
   .about__name {
     font-size: clamp(10px, 2vw, 16px);
   }
-
-  /* Contact tetap horizontal di bawah video */
   .about__contact {
     gap: 4px 10px;
   }
@@ -267,7 +277,6 @@
     display: inline;
     margin: 0 2px;
   }
-
   .list--timeline li {
     grid-template-columns: 1fr;
     gap: 2px;
@@ -282,7 +291,6 @@
   .list--timeline em {
     font-size: 12px;
   }
-
   .about__ledeBig {
     font-size: clamp(9px, 2.4vw, 15px);
     line-height: 1.15;
@@ -291,7 +299,6 @@
     font-size: clamp(8px, 1.8vw, 12px);
     margin-bottom: 3px;
   }
-
   .about__section h3 {
     font-size: 13px;
   }
