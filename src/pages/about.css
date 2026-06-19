@@ -1,13 +1,10 @@
 :root {
   --paper: #000;
   --ink: #fff;
-  --accent: #2563eb; /* biru editorial untuk lede besar */
+  --accent: #2563eb;
   --line: rgba(255, 255, 255, 0.16);
 }
 
-/* Optional: font “Network” untuk lede besar
-   letakkan file di /public/assets/fonts/NetworkFreeVersion.ttf
-*/
 @font-face {
   font-family: "NetworkFree";
   src: url("/assets/fonts/NetworkFreeVersion.ttf") format("truetype");
@@ -34,7 +31,7 @@
   gap: clamp(20px, 3vw, 48px);
 }
 
-/* ===== LEFT: video dengan overlay teks ===== */
+/* ===== LEFT: video ===== */
 .about__figure {
   margin: 0;
   width: min(680px, 90%);
@@ -66,15 +63,15 @@
   background: transparent;
 }
 
-/* Overlay teks yang menutupi bagian atas video */
+/* Overlay teks di atas video */
 .about__overlay {
   position: absolute;
   z-index: 3;
-  pointer-events: none; /* biar klik tetap “tembus” */
+  pointer-events: none;
   left: clamp(10px, 2vw, 16px);
   right: clamp(10px, 4vw, 28px);
   top: clamp(10px, 2vw, 16px);
-  max-width: 38ch; /* atur lebar -> kontrol seberapa jauh “nutup” videonya */
+  max-width: 38ch;
 }
 
 .about__name {
@@ -89,7 +86,7 @@
 .about__ledeBig {
   margin: 0;
   line-height: 1.08;
-  font-size: clamp(22px, 4.4vw, 48px); /* gede kaya contoh */
+  font-size: clamp(22px, 4.4vw, 48px);
   color: var(--accent);
   font-weight: 800;
   font-family: "NetworkFree", "Inter", system-ui, -apple-system, Segoe UI,
@@ -99,17 +96,17 @@
   font-weight: 900;
 }
 
-/* ===== RIGHT column (contact & lists) ===== */
+/* ===== RIGHT column ===== */
 .col--right {
   position: relative;
 }
 
+/* ------ CONTACT (FIX: flex-wrap agar turun di mobile) ------ */
 .about__contact {
-  display: grid;
-  grid-auto-flow: column;
+  display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  justify-content: start;
-  gap: 12px;
+  gap: 4px 12px;
   margin-bottom: 10px;
   border-bottom: 1px solid var(--line);
   padding-bottom: 10px;
@@ -122,11 +119,17 @@
   color: var(--ink);
   text-decoration: none;
   border-bottom: 1px solid transparent;
+  white-space: nowrap;
 }
 .about__contact a:hover {
   border-color: var(--ink);
 }
+.about__contact .sep {
+  opacity: 0.4;
+  user-select: none;
+}
 
+/* ------ SECTIONS ------ */
 .about__sections {
   display: grid;
   gap: 26px;
@@ -172,7 +175,6 @@
   padding-left: 2px;
 }
 
-/* aksesibilitas */
 .visually-hidden {
   position: absolute !important;
   width: 1px;
@@ -185,7 +187,11 @@
   border: 0;
 }
 
-/* ===== Responsive ===== */
+/* =============================================================
+   RESPONSIVE
+   ============================================================= */
+
+/* Tablet & mobile (lebar < 960px) */
 @media (max-width: 960px) {
   .about__wrap {
     grid-template-columns: 1fr;
@@ -196,5 +202,83 @@
   .about__overlay {
     right: clamp(10px, 6vw, 36px);
     max-width: 40ch;
+  }
+}
+
+/* Mobile kecil (lebar < 600px) – FIX utama untuk kontak & timeline */
+@media (max-width: 600px) {
+  /* Contact: lebih rapat & fleksibel */
+  .about__contact {
+    gap: 4px 8px;
+    font-size: 14px;
+  }
+  .about__contact h2 {
+    font-size: 14px;
+    margin-right: 6px;
+  }
+  .about__contact .sep {
+    margin: 0 1px;
+  }
+
+  /* Timeline: tahun di atas, konten di bawah */
+  .list--timeline li {
+    grid-template-columns: 1fr;
+    gap: 2px;
+    padding: 8px 0;
+  }
+  .list--timeline b {
+    font-size: 13px;
+  }
+  .list--timeline span {
+    font-size: 15px;
+  }
+  .list--timeline em {
+    font-size: 12px;
+  }
+
+  /* Overlay teks agar tidak terlalu lebar */
+  .about__overlay {
+    max-width: 30ch;
+    left: clamp(6px, 2vw, 10px);
+    right: clamp(6px, 3vw, 14px);
+    top: clamp(6px, 2vw, 10px);
+  }
+  .about__ledeBig {
+    font-size: clamp(18px, 5.5vw, 28px);
+  }
+  .about__name {
+    font-size: clamp(14px, 3.5vw, 18px);
+  }
+
+  /* Section heading lebih kecil */
+  .about__section h3 {
+    font-size: 13px;
+  }
+
+  /* Bullet list lebih rapat */
+  .list--bullets {
+    padding-left: 14px;
+  }
+  .list--bullets li {
+    font-size: 14px;
+    margin: 4px 0;
+  }
+}
+
+/* Mobile sangat kecil (< 400px) – extra polish */
+@media (max-width: 400px) {
+  .about__contact {
+    font-size: 13px;
+    gap: 2px 6px;
+  }
+  .about__contact h2 {
+    font-size: 13px;
+    margin-right: 4px;
+  }
+  .about__overlay {
+    max-width: 26ch;
+  }
+  .about__ledeBig {
+    font-size: clamp(16px, 5vw, 22px);
   }
 }
