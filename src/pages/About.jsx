@@ -17,6 +17,7 @@ export default function About() {
   return (
     <div className="about">
       <div className="about__wrap">
+
         {/* KIRI — video + overlay */}
         <section className="col col--left">
           <figure
@@ -62,7 +63,7 @@ export default function About() {
                 is a Jakarta based digital studio specializing in full-stack web
                 development, by Dimasprydh. I design and build fast, readable
                 websites aligned to your brand using Shopify (Liquid),
-                React/Vite, PHP, and modern HTML/CSS/JS. From{" VSCODE "}
+                React/Vite, PHP, and modern HTML/CSS/JS. From VSCODE{" "}
                 <strong>concept</strong> to <strong>production</strong>.
               </p>
             </div>
@@ -75,11 +76,15 @@ export default function About() {
 
         {/* KANAN — contact + sections */}
         <section className="col col--right">
+
+          {/* Contact */}
           <div className="about__contact">
             <h2>Contact</h2>
-            <a href="mailto:sep314studio@gmail.com">sep314studio@gmail.com</a>
+            <a href="mailto:sep314studio@gmail.com">
+              sep314studio@gmail.com
+            </a>
             <span className="sep">—</span>
-            
+            <a
               href="https://instagram.com/sep314studio"
               target="_blank"
               rel="noreferrer"
@@ -87,7 +92,7 @@ export default function About() {
               Instagram
             </a>
             <span className="sep">—</span>
-            
+            <a
               href="https://www.linkedin.com/in/dimasprydh/"
               target="_blank"
               rel="noreferrer"
@@ -97,6 +102,8 @@ export default function About() {
           </div>
 
           <div className="about__sections">
+
+            {/* Education */}
             <section className="about__section">
               <h3>Education</h3>
               <ul className="list list--timeline">
@@ -113,6 +120,7 @@ export default function About() {
               </ul>
             </section>
 
+            {/* Work Experience */}
             <section className="about__section">
               <h3>Work Experience</h3>
               <ul className="list list--timeline">
@@ -164,11 +172,12 @@ export default function About() {
               </ul>
             </section>
 
+            {/* Certificate */}
             <section className="about__section">
               <h3>Certificate</h3>
               <ul className="list list--bullets">
                 <li>
-                  
+                  <a
                     href="https://www.udemy.com/certificate/UC-7551c843-ddea-44c0-ad36-8b703e8abf3b/"
                     target="_blank"
                     rel="noreferrer"
@@ -178,8 +187,10 @@ export default function About() {
                 </li>
               </ul>
             </section>
+
           </div>
         </section>
+
       </div>
     </div>
   );
