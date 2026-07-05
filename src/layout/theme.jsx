@@ -1,6 +1,7 @@
 import React, { useLayoutEffect, useRef, useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import LoaderOverlay from "../components/LoaderOverlay.jsx";
+import MotionFrame from "../components/MotionFrame.jsx";
 import Header from "../sections/Header.jsx";
 
 export default function Theme() {
@@ -63,6 +64,7 @@ export default function Theme() {
   return (
     <>
       <LoaderOverlay show={showLoader} onDone={handleDone} />
+      <MotionFrame />
 
       <header>
         <Header />
