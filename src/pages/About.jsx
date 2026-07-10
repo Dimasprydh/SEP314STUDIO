@@ -125,6 +125,15 @@ export default function About() {
               <h3>Work Experience</h3>
               <ul className="list list--timeline">
                 <li>
+                  <b>2026 — Now</b>
+                  <span>
+                    <a href="https://forhermoment.com/" target="_blank" rel="noreferrer">
+                      For Her Moment
+                    </a>
+                  </span>
+                  <em>Web Designer &amp; Developer</em>
+                </li>
+                <li>
                   <b>2025 — Now</b>
                   <span>
                     <a href="https://onionwrks.com/" target="_blank" rel="noreferrer">
