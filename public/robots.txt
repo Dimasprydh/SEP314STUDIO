@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sep314studio.xyz/sitemap.xml
