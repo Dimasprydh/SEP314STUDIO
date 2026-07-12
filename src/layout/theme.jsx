@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useRef, useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import LoaderOverlay from "../components/LoaderOverlay.jsx";
 import Header from "../sections/Header.jsx";
+import Seo from "../components/Seo.jsx";
 
 export default function Theme() {
   const location = useLocation();
@@ -62,6 +63,7 @@ export default function Theme() {
 
   return (
     <>
+      <Seo />
       <LoaderOverlay show={showLoader} onDone={handleDone} />
 
       <header>
