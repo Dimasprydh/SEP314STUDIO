@@ -77,11 +77,11 @@ export default function About() {
 
               <div className="about__mediaState" aria-hidden="true">
                 <div className="about__mediaStateMeta">
-                  <span>PROFILE MOTION</span>
+                  <span>SEP314STUDIO</span>
                   <span>
                     {mediaState === "error"
-                      ? "VISUAL UNAVAILABLE"
-                      : "LOADING VISUAL"}
+                      ? "VIDEO UNAVAILABLE"
+                      : "LOADING VIDEO"}
                   </span>
                 </div>
                 <div className="about__mediaStateLine">

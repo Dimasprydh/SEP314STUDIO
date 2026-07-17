@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./home.css";
 import { asset } from "../utils/asset";
 
@@ -76,9 +76,40 @@ async function markImageReady(image, isError = false) {
   image.dispatchEvent(new CustomEvent("sep:image-ready"));
 }
 
+const cardStatusStyle = {
+  position: "absolute",
+  left: "50%",
+  top: "50%",
+  zIndex: 5,
+  transform: "translate(-50%, -50%)",
+  padding: "6px 8px",
+  border: "1px solid rgba(255,255,255,0.78)",
+  background: "#000",
+  color: "#fff",
+  fontFamily:
+    "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace",
+  fontSize: "9px",
+  fontWeight: 700,
+  lineHeight: 1,
+  letterSpacing: "0.08em",
+  whiteSpace: "nowrap",
+  pointerEvents: "none",
+};
+
 function Card({ p, hiddenCard = false, priority = false }) {
+  const [mediaState, setMediaState] = useState("loading");
+
+  const finishImage = async (image, isError = false) => {
+    await markImageReady(image, isError);
+    setMediaState(isError ? "error" : "ready");
+  };
+
   return (
-    <article className="card card--reveal" data-title={p.subtitle}>
+    <article
+      className="card card--reveal"
+      data-title={p.subtitle}
+      aria-busy={mediaState === "loading"}
+    >
       <img
         className="card__img"
         src={asset(p.img)}
@@ -88,7 +119,7 @@ function Card({ p, hiddenCard = false, priority = false }) {
         decoding="async"
         draggable="false"
         onLoad={(event) => {
-          void markImageReady(event.currentTarget);
+          void finishImage(event.currentTarget);
         }}
         onError={(event) => {
           const image = event.currentTarget;
@@ -100,9 +131,15 @@ function Card({ p, hiddenCard = false, priority = false }) {
             return;
           }
 
-          void markImageReady(image, true);
+          void finishImage(image, true);
         }}
       />
+
+      {mediaState !== "ready" && (
+        <div style={cardStatusStyle} aria-hidden="true">
+          {mediaState === "error" ? "VISUAL UNAVAILABLE" : "LOADING VISUAL"}
+        </div>
+      )}
 
       <div className="cap cap--top">
         <h3>{p.title}</h3>
