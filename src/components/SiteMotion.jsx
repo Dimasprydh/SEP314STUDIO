@@ -104,7 +104,6 @@ export default function SiteMotion({ pathname, disabled = false, onBusyChange })
   const phaseRef = useRef("idle");
   const pendingHrefRef = useRef(null);
   const previousPathRef = useRef(pathname);
-  const revealPathRef = useRef("");
   const frameRef = useRef(0);
   const timersRef = useRef([]);
 
@@ -247,22 +246,15 @@ export default function SiteMotion({ pathname, disabled = false, onBusyChange })
     const root = document.querySelector("main[data-site-main]");
     if (!root) return undefined;
 
+    // When reduced motion is enabled, immediately release anything that may
+    // already have been prepared by a previous render.
     if (disabled) {
-      root.querySelectorAll("[data-motion-reveal]").forEach((element) => {
+      root.querySelectorAll('[data-motion-reveal="true"]').forEach((element) => {
         element.classList.add("is-motion-visible");
       });
       return undefined;
     }
 
-    const readyToBind =
-      phase === "revealing" ||
-      (phase === "idle" && revealPathRef.current !== pathname);
-
-    if (!readyToBind || revealPathRef.current === pathname) {
-      return undefined;
-    }
-
-    revealPathRef.current = pathname;
     const elements = [];
     const seen = new Set();
 
@@ -273,6 +265,7 @@ export default function SiteMotion({ pathname, disabled = false, onBusyChange })
 
         element.dataset.motionReveal = "true";
         element.dataset.motionKind = kind;
+        element.classList.remove("is-motion-visible");
         element.style.setProperty(
           "--motion-delay",
           `${Math.min(index * stagger, 360)}ms`
@@ -283,30 +276,63 @@ export default function SiteMotion({ pathname, disabled = false, onBusyChange })
 
     if (!elements.length) return undefined;
 
-    if (!("IntersectionObserver" in window)) {
-      elements.forEach((element) => element.classList.add("is-motion-visible"));
-      return undefined;
-    }
+    let cancelled = false;
+    let observer = null;
+    let startTimer = 0;
+    let failSafeTimer = 0;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
+    const revealElement = (element) => {
+      element.classList.add("is-motion-visible");
+      observer?.unobserve(element);
+    };
 
-          entry.target.classList.add("is-motion-visible");
-          observer.unobserve(entry.target);
-        });
-      },
-      {
-        threshold: 0.12,
-        rootMargin: "0px 0px -8% 0px",
+    const revealEverything = () => {
+      elements.forEach(revealElement);
+    };
+
+    const startObserving = () => {
+      if (cancelled) return;
+
+      if (!("IntersectionObserver" in window)) {
+        revealEverything();
+        return;
       }
-    );
 
-    elements.forEach((element) => observer.observe(element));
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            revealElement(entry.target);
+          });
+        },
+        {
+          threshold: 0.08,
+          rootMargin: "0px 0px -5% 0px",
+        }
+      );
 
-    return () => observer.disconnect();
-  }, [disabled, pathname, phase]);
+      elements.forEach((element) => observer.observe(element));
+
+      // The observer intentionally stays alive for the whole route. This
+      // fallback guarantees content is never left permanently hidden if a
+      // browser pauses or drops an observer callback during a transition.
+      failSafeTimer = window.setTimeout(revealEverything, 5000);
+    };
+
+    // On internal navigation, begin the content reveal just after the black
+    // transition panel starts leaving. On a direct visit, start immediately.
+    const startDelay =
+      phaseRef.current === "covered" || phaseRef.current === "revealing" ? 100 : 32;
+
+    startTimer = window.setTimeout(startObserving, startDelay);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(startTimer);
+      window.clearTimeout(failSafeTimer);
+      observer?.disconnect();
+    };
+  }, [disabled, pathname]);
 
   useEffect(() => clearMotionTimers, [clearMotionTimers]);
 
