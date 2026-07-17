@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import "./home.css";
 import { asset } from "../utils/asset";
 
@@ -60,23 +60,47 @@ const projects = [
   },
 ];
 
-function Card({ p, hiddenCard = false }) {
+async function markImageReady(image, isError = false) {
+  if (!image || image.dataset.ready === "true") return;
+
+  if (!isError && typeof image.decode === "function") {
+    try {
+      await image.decode();
+    } catch {
+      // Some browsers reject decode() even though the image can still render.
+    }
+  }
+
+  image.dataset.ready = "true";
+  image.closest(".card")?.classList.add("is-image-loaded");
+  image.dispatchEvent(new CustomEvent("sep:image-ready"));
+}
+
+function Card({ p, hiddenCard = false, priority = false }) {
   return (
     <article className="card card--reveal" data-title={p.subtitle}>
       <img
         className="card__img"
         src={asset(p.img)}
         alt={`${p.title} website preview`}
-        loading={hiddenCard ? "lazy" : "eager"}
+        loading={priority ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : "auto"}
         decoding="async"
         draggable="false"
-        onError={(e) => {
-          const tried = e.currentTarget.dataset.tried || "png";
+        onLoad={(event) => {
+          void markImageReady(event.currentTarget);
+        }}
+        onError={(event) => {
+          const image = event.currentTarget;
+          const tried = image.dataset.tried || "png";
 
           if (tried === "png") {
-            e.currentTarget.dataset.tried = "jpg";
-            e.currentTarget.src = asset(p.img.replace(/\.png$/i, ".jpg"));
+            image.dataset.tried = "jpg";
+            image.src = asset(p.img.replace(/\.png$/i, ".jpg"));
+            return;
           }
+
+          void markImageReady(image, true);
         }}
       />
 
@@ -117,28 +141,29 @@ function Card({ p, hiddenCard = false }) {
 }
 
 export default function Home() {
+  const stripRef = useRef(null);
   const trackRef = useRef(null);
   const groupRef = useRef(null);
 
-  const marqueeProjects = useMemo(() => {
-    return [...projects, ...projects];
-  }, []);
-
   useEffect(() => {
+    const strip = stripRef.current;
     const track = trackRef.current;
     const group = groupRef.current;
 
-    if (!track || !group) return;
+    if (!strip || !track || !group) return undefined;
 
+    let disposed = false;
+    let ready = false;
     let frame = 0;
+    let revealFrame = 0;
     let resizeObserver = null;
+    let safetyTimer = 0;
 
     const measureAndSet = () => {
       cancelAnimationFrame(frame);
 
       frame = requestAnimationFrame(() => {
         const groupWidth = Math.ceil(group.getBoundingClientRect().width);
-
         if (!groupWidth) return;
 
         const isMobile = window.matchMedia("(max-width: 720px)").matches;
@@ -147,20 +172,55 @@ export default function Home() {
 
         track.style.setProperty("--move-x", `${groupWidth}px`);
         track.style.setProperty("--duration", `${duration}s`);
-        track.classList.add("is-ready");
       });
     };
 
-    const images = Array.from(group.querySelectorAll("img"));
+    const revealTrack = () => {
+      if (disposed || ready) return;
+      ready = true;
+      measureAndSet();
 
-    images.forEach((img) => {
-      if (!img.complete) {
-        img.addEventListener("load", measureAndSet, { once: true });
-        img.addEventListener("error", measureAndSet, { once: true });
+      // Keep one painted loading frame before starting the visual reveal.
+      revealFrame = requestAnimationFrame(() => {
+        revealFrame = requestAnimationFrame(() => {
+          if (disposed) return;
+          strip.classList.add("is-media-ready");
+          track.classList.add("is-ready");
+        });
+      });
+    };
+
+    const criticalImages = Array.from(group.querySelectorAll("img")).slice(0, 4);
+
+    const checkCriticalImages = () => {
+      if (!criticalImages.length) {
+        revealTrack();
+        return;
+      }
+
+      const allReady = criticalImages.every(
+        (image) => image.dataset.ready === "true"
+      );
+
+      if (allReady) revealTrack();
+    };
+
+    const onImageReady = () => checkCriticalImages();
+
+    criticalImages.forEach((image) => {
+      image.addEventListener("sep:image-ready", onImageReady);
+
+      if (image.complete && image.naturalWidth > 0) {
+        void markImageReady(image).then(checkCriticalImages);
       }
     });
 
     measureAndSet();
+    checkCriticalImages();
+
+    // Never leave the visitor on a loader forever if a browser stalls an image
+    // event. Individual cards still keep a deliberate loading treatment.
+    safetyTimer = window.setTimeout(revealTrack, 3200);
 
     if ("ResizeObserver" in window) {
       resizeObserver = new ResizeObserver(measureAndSet);
@@ -173,23 +233,22 @@ export default function Home() {
       passive: true,
     });
 
-    if (document.fonts && document.fonts.ready) {
+    if (document.fonts?.ready) {
       document.fonts.ready.then(measureAndSet).catch(() => {});
     }
 
     return () => {
+      disposed = true;
       cancelAnimationFrame(frame);
-
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      }
+      cancelAnimationFrame(revealFrame);
+      window.clearTimeout(safetyTimer);
+      resizeObserver?.disconnect();
 
       window.removeEventListener("resize", measureAndSet);
       window.removeEventListener("orientationchange", measureAndSet);
 
-      images.forEach((img) => {
-        img.removeEventListener("load", measureAndSet);
-        img.removeEventListener("error", measureAndSet);
+      criticalImages.forEach((image) => {
+        image.removeEventListener("sep:image-ready", onImageReady);
       });
     };
   }, []);
@@ -198,22 +257,36 @@ export default function Home() {
     <main className="home">
       <section className="stage" aria-label="Selected portfolio projects">
         <div className="strip-wrap">
-          <div className="strip">
+          <div className="strip" ref={stripRef}>
             <div className="track" ref={trackRef}>
               <div className="marquee-group" ref={groupRef}>
-                {marqueeProjects.map((p, index) => (
-                  <Card key={`base-${index}-${p.slug}`} p={p} />
+                {projects.map((project, index) => (
+                  <Card
+                    key={`base-${project.slug}`}
+                    p={project}
+                    priority={index < 4}
+                  />
                 ))}
               </div>
 
               <div className="marquee-group" aria-hidden="true">
-                {marqueeProjects.map((p, index) => (
+                {projects.map((project) => (
                   <Card
-                    key={`clone-${index}-${p.slug}`}
-                    p={p}
+                    key={`clone-${project.slug}`}
+                    p={project}
                     hiddenCard={true}
                   />
                 ))}
+              </div>
+            </div>
+
+            <div className="strip-loader" aria-live="polite">
+              <div className="strip-loader__meta">
+                <span>SELECTED WORK</span>
+                <span>LOADING VISUALS</span>
+              </div>
+              <div className="strip-loader__line" aria-hidden="true">
+                <span />
               </div>
             </div>
           </div>
