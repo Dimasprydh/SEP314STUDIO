@@ -34,11 +34,11 @@
 /* ===== LEFT: video ===== */
 .about__figure {
   margin: 0;
-  width: 100%; /* UBAH: Biarkan mengisi penuh grid kiri supaya besar di dekstop */
+  width: 100%;
   border: 2px solid var(--ink);
   position: relative;
   background: #000;
-  container-type: inline-size; /* Biar font di video otomatis menyesuaikan */
+  container-type: inline-size;
 }
 
 .about__videoShell {
@@ -46,28 +46,117 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
+  background: #050505;
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
 }
+
 .about__video {
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
   background: #000;
+  opacity: 0;
   pointer-events: none;
+  will-change: opacity;
+  transition: opacity 560ms cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+.about__figure.is-media-ready .about__video {
+  opacity: 1;
+  will-change: auto;
+}
+
+.about__mediaState {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: clamp(12px, 2vw, 20px);
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.82)),
+    #050505;
+  color: #fff;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 0s;
+}
+
+.about__figure.is-media-ready .about__mediaState {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 360ms;
+}
+
+.about__mediaStateMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  font-size: clamp(9px, 0.72vw, 11px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.about__mediaStateLine {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.about__mediaStateLine span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 36%;
+  background: #fff;
+  transform: translate3d(-110%, 0, 0);
+  animation: aboutMediaScan 1.15s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+}
+
+.about__figure.is-media-error .about__mediaStateLine span {
+  width: 100%;
+  opacity: 0.32;
+  transform: none;
+  animation: none;
+}
+
+@keyframes aboutMediaScan {
+  0% {
+    transform: translate3d(-110%, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(320%, 0, 0);
+  }
+}
+
 .about__shield {
   position: absolute;
   inset: 0;
+  z-index: 4;
   background: transparent;
 }
 
 /* Overlay teks di atas video */
 .about__overlay {
   position: absolute;
-  z-index: 3;
+  z-index: 5;
   pointer-events: none;
   left: clamp(12px, 2vw, 20px);
   right: clamp(12px, 2vw, 20px);
@@ -81,7 +170,7 @@
   font-weight: 800;
   opacity: 0.9;
   color: #2563eb;
-  font-size: clamp(16px, 4cqi, 34px); 
+  font-size: clamp(16px, 4cqi, 34px);
 }
 
 .about__ledeBig {
@@ -93,8 +182,9 @@
     Roboto, Arial, sans-serif;
   overflow-wrap: break-word;
   word-break: break-word;
-  font-size: clamp(14px, 5cqi, 48px); /* Ukuran font otomatis mengikuti video */
+  font-size: clamp(14px, 5cqi, 48px);
 }
+
 .about__ledeBig strong {
   font-weight: 900;
 }
@@ -104,7 +194,6 @@
   position: relative;
 }
 
-/* ------ CONTACT (Desktop: Horizontal, Mobile: 2 Baris) ------ */
 .about__contact {
   display: flex;
   flex-wrap: wrap;
@@ -114,29 +203,33 @@
   border-bottom: 1px solid var(--line);
   padding-bottom: 10px;
 }
+
 .about__contact h2 {
   font-size: 16px;
   margin: 0 10px 0 0;
 }
+
 .about__contact a {
   color: var(--ink);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   white-space: nowrap;
 }
+
 .about__contact a:hover {
   border-color: var(--ink);
 }
+
 .about__contact .sep {
   opacity: 0.4;
   user-select: none;
 }
 
-/* ------ SECTIONS ------ */
 .about__sections {
   display: grid;
   gap: 26px;
 }
+
 .about__section h3 {
   color: var(--ink);
   font-size: 14px;
@@ -150,6 +243,7 @@
   padding: 0;
   list-style: none;
 }
+
 .list--timeline li {
   display: grid;
   grid-template-columns: 110px 1fr;
@@ -157,22 +251,27 @@
   padding: 7px 0;
   border-bottom: 1px dashed var(--line);
 }
+
 .list--timeline li:last-child {
   border-bottom: 0;
 }
+
 .list--timeline b {
   font-weight: 800;
   opacity: 0.9;
 }
+
 .list--timeline em {
   opacity: 0.72;
   font-style: normal;
   font-size: 12px;
 }
+
 .list--bullets {
   list-style: disc;
   padding-left: 18px;
 }
+
 .list--bullets li {
   margin: 6px 0;
   padding-left: 2px;
@@ -194,30 +293,32 @@
    RESPONSIVE
    ============================================================= */
 
-/* Tablet & mobile (lebar < 960px) */
 @media (max-width: 960px) {
   .about__wrap {
     grid-template-columns: 1fr;
   }
+
   .about__figure {
     width: 100%;
   }
 
-  /* Contact: Judul di baris atas, Link memanjang di baris bawahnya */
   .about__contact {
-    flex-direction: row; 
-    flex-wrap: wrap;     
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: flex-start;
     gap: 4px 8px;
   }
+
   .about__contact h2 {
-    width: 100%; /* Memaksa Contact ke baris sendiri */
+    width: 100%;
     margin: 0 0 4px 0;
     font-size: 16px;
   }
+
   .about__contact a {
     font-size: 15px;
   }
+
   .about__contact .sep {
     margin: 0 4px;
   }
@@ -229,7 +330,6 @@
   }
 }
 
-/* Mobile sedang (lebar < 700px) */
 @media (max-width: 700px) {
   .about__overlay {
     left: clamp(12px, 2.5vw, 18px);
@@ -238,27 +338,29 @@
   }
 }
 
-/* Mobile kecil (lebar < 600px) */
 @media (max-width: 600px) {
   .about__contact h2 {
     font-size: 14px;
   }
+
   .about__contact a {
     font-size: 14px;
   }
 
-  /* Timeline: tahun di atas, konten di bawah */
   .list--timeline li {
     grid-template-columns: 1fr;
     gap: 2px;
     padding: 8px 0;
   }
+
   .list--timeline b {
     font-size: 13px;
   }
+
   .list--timeline span {
     font-size: 15px;
   }
+
   .list--timeline em {
     font-size: 12px;
   }
@@ -277,24 +379,40 @@
   .list--bullets {
     padding-left: 14px;
   }
+
   .list--bullets li {
     font-size: 14px;
     margin: 4px 0;
   }
 }
 
-/* Mobile sangat kecil (< 400px) */
 @media (max-width: 400px) {
   .about__contact h2 {
     font-size: 13px;
   }
+
   .about__contact a {
     font-size: 13px;
   }
+
   .about__overlay {
     max-width: 40ch;
     left: clamp(8px, 2vw, 12px);
     right: clamp(8px, 2vw, 12px);
     top: clamp(8px, 2vw, 12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about__video,
+  .about__mediaState {
+    transition: none;
+  }
+
+  .about__mediaStateLine span {
+    animation: none;
+    width: 100%;
+    opacity: 0.32;
+    transform: none;
   }
 }
