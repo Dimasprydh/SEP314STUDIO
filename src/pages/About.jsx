@@ -5,6 +5,7 @@ import { asset } from "../utils/asset";
 
 export default function About() {
   const [ratio, setRatio] = useState(3 / 4);
+  const [mediaState, setMediaState] = useState("loading");
   const vRef = useRef(null);
 
   const onMeta = useCallback(() => {
@@ -14,21 +15,42 @@ export default function About() {
     if (w && h) setRatio(w / h);
   }, []);
 
+  const markMediaReady = useCallback(() => {
+    setMediaState("ready");
+
+    const video = vRef.current;
+    if (video?.paused) {
+      video.play().catch(() => {});
+    }
+  }, []);
+
+  const markMediaError = useCallback(() => {
+    setMediaState("error");
+  }, []);
+
+  const figureClassName = [
+    "about__figure",
+    "about__figure--video",
+    mediaState === "ready" ? "is-media-ready" : "",
+    mediaState === "error" ? "is-media-error" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <div className="about">
       <div className="about__wrap">
-
         {/* KIRI — video + overlay */}
         <section className="col col--left">
           <figure
-            className="about__figure about__figure--video"
+            className={figureClassName}
             style={{ aspectRatio: ratio }}
+            aria-busy={mediaState === "loading"}
           >
             <div
               className="about__videoShell"
               onContextMenu={(e) => e.preventDefault()}
               draggable={false}
-              aria-hidden="true"
             >
               <video
                 ref={vRef}
@@ -43,12 +65,30 @@ export default function About() {
                 controlsList="nodownload noplaybackrate nofullscreen"
                 tabIndex={-1}
                 onLoadedMetadata={onMeta}
+                onLoadedData={markMediaReady}
+                onCanPlay={markMediaReady}
+                onError={markMediaError}
               >
                 <source
                   src={asset("assets/about-image-video/profile.mp4")}
                   type="video/mp4"
                 />
               </video>
+
+              <div className="about__mediaState" aria-hidden="true">
+                <div className="about__mediaStateMeta">
+                  <span>PROFILE MOTION</span>
+                  <span>
+                    {mediaState === "error"
+                      ? "VISUAL UNAVAILABLE"
+                      : "LOADING VISUAL"}
+                  </span>
+                </div>
+                <div className="about__mediaStateLine">
+                  <span />
+                </div>
+              </div>
+
               <div
                 className="about__shield"
                 onContextMenu={(e) => e.preventDefault()}
@@ -69,14 +109,13 @@ export default function About() {
             </div>
 
             <figcaption className="visually-hidden">
-              Portrait motion loop of SEPT314STUDIO
+              Portrait motion loop of SEP314STUDIO
             </figcaption>
           </figure>
         </section>
 
         {/* KANAN — contact + sections */}
         <section className="col col--right">
-
           {/* Contact */}
           <div className="about__contact">
             <h2>Contact</h2>
@@ -102,7 +141,6 @@ export default function About() {
           </div>
 
           <div className="about__sections">
-
             {/* Education */}
             <section className="about__section">
               <h3>Education</h3>
@@ -110,7 +148,7 @@ export default function About() {
                 <li>
                   <b>2019 — 2023</b>
                   <span>Computer Science</span>
-                  <em>Binus University - Bachelor's Degree</em>
+                  <em>Binus University - Bachelor&apos;s Degree</em>
                 </li>
                 <li>
                   <b>2013 — 2019</b>
@@ -196,10 +234,8 @@ export default function About() {
                 </li>
               </ul>
             </section>
-
           </div>
         </section>
-
       </div>
     </div>
   );
