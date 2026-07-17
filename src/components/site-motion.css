@@ -152,6 +152,22 @@
   will-change: auto;
 }
 
+/*
+ * Primary visual content must never wait for IntersectionObserver.
+ * The page wipe already provides the entrance motion, so keeping these hidden
+ * creates an unnecessary blank screen on Overview, Work, and Info.
+ */
+main[data-site-main] .strip-wrap[data-motion-reveal="true"],
+main[data-site-main] .heroMark[data-motion-reveal="true"],
+main[data-site-main] .work-card__figure[data-motion-reveal="true"],
+main[data-site-main] .about__figure[data-motion-reveal="true"] {
+  opacity: 1 !important;
+  clip-path: none !important;
+  transform: none !important;
+  transition: none !important;
+  transition-delay: 0ms !important;
+}
+
 @media (max-width: 720px) {
   .site-transition {
     padding: 16px 14px 18px;
