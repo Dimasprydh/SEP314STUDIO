@@ -153,21 +153,21 @@
 }
 
 /*
- * Primary media keeps the original clip reveal, but it no longer waits for
- * IntersectionObserver. The animation is paused behind the loader/page wipe
- * and resumes immediately when the page becomes interactive.
+ * Primary media uses a deterministic reveal instead of waiting for the
+ * IntersectionObserver. Important static opacity/clip declarations are avoided
+ * because they would override the keyframes and make the media appear instantly.
  */
 @keyframes primaryMediaQuickReveal {
-  from {
-    opacity: 0.72;
+  0% {
+    opacity: 0.42;
     clip-path: inset(0 0 100% 0);
-    transform: translate3d(0, 8px, 0);
+    transform: translate3d(0, 16px, 0) scale(1.015);
   }
 
-  to {
+  100% {
     opacity: 1;
     clip-path: inset(0 0 0 0);
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
@@ -175,12 +175,9 @@ main[data-site-main] .strip-wrap[data-motion-reveal="true"],
 main[data-site-main] .heroMark[data-motion-reveal="true"],
 main[data-site-main] .work-card__figure[data-motion-reveal="true"],
 main[data-site-main] .about__figure[data-motion-reveal="true"] {
-  opacity: 1 !important;
-  clip-path: none !important;
-  transform: none !important;
   transition: none !important;
   transition-delay: 0ms !important;
-  animation: primaryMediaQuickReveal 420ms 40ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: primaryMediaQuickReveal 560ms 20ms cubic-bezier(0.22, 1, 0.36, 1) both;
   will-change: opacity, clip-path, transform;
 }
 
