@@ -280,6 +280,7 @@ export default function SiteMotion({ pathname, disabled = false, onBusyChange })
     let observer = null;
     let startTimer = 0;
     let failSafeTimer = 0;
+    let viewportFrame = 0;
 
     const revealElement = (element) => {
       element.classList.add("is-motion-visible");
@@ -288,6 +289,18 @@ export default function SiteMotion({ pathname, disabled = false, onBusyChange })
 
     const revealEverything = () => {
       elements.forEach(revealElement);
+    };
+
+    const revealElementsAlreadyInView = () => {
+      const viewportHeight =
+        window.innerHeight || document.documentElement.clientHeight;
+
+      elements.forEach((element) => {
+        const rect = element.getBoundingClientRect();
+        if (rect.bottom >= 0 && rect.top <= viewportHeight) {
+          revealElement(element);
+        }
+      });
     };
 
     const startObserving = () => {
@@ -313,16 +326,19 @@ export default function SiteMotion({ pathname, disabled = false, onBusyChange })
 
       elements.forEach((element) => observer.observe(element));
 
-      // The observer intentionally stays alive for the whole route. This
-      // fallback guarantees content is never left permanently hidden if a
-      // browser pauses or drops an observer callback during a transition.
-      failSafeTimer = window.setTimeout(revealEverything, 5000);
+      // Do not wait for a delayed observer callback for content that is already
+      // inside the first viewport. The transition still uses the original CSS.
+      viewportFrame = requestAnimationFrame(revealElementsAlreadyInView);
+
+      // Short fallback: it should never be visible to the user, but prevents a
+      // browser from leaving content hidden if it pauses observer callbacks.
+      failSafeTimer = window.setTimeout(revealEverything, 1600);
     };
 
-    // On internal navigation, begin the content reveal just after the black
-    // transition panel starts leaving. On a direct visit, start immediately.
+    // Start almost immediately. Internal navigation still waits briefly for the
+    // black page wipe to begin leaving, so both motions remain visually clean.
     const startDelay =
-      phaseRef.current === "covered" || phaseRef.current === "revealing" ? 100 : 32;
+      phaseRef.current === "covered" || phaseRef.current === "revealing" ? 40 : 0;
 
     startTimer = window.setTimeout(startObserving, startDelay);
 
@@ -330,6 +346,7 @@ export default function SiteMotion({ pathname, disabled = false, onBusyChange })
       cancelled = true;
       window.clearTimeout(startTimer);
       window.clearTimeout(failSafeTimer);
+      cancelAnimationFrame(viewportFrame);
       observer?.disconnect();
     };
   }, [disabled, pathname]);
