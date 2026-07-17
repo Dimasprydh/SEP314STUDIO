@@ -20,7 +20,12 @@ const REVEAL_GROUPS = [
   { selector: ".strip-wrap", kind: "clip", stagger: 0 },
   { selector: ".stamp-foot", kind: "fade-up", stagger: 0 },
 
-  { selector: ".work__sticky > *", kind: "fade-up", stagger: 70 },
+  {
+    selector: ".work__kicker, .work__meta, .work__cta, .work__count",
+    kind: "fade-up",
+    stagger: 70,
+  },
+  { selector: ".work__title", kind: "fade", stagger: 0 },
   { selector: ".heroMark", kind: "clip", stagger: 0 },
   { selector: ".work-card__figure", kind: "clip", stagger: 55 },
 
@@ -98,7 +103,7 @@ export default function SiteMotion({ pathname, disabled = false, onBusyChange })
   const [routeMeta, setRouteMeta] = useState(() => getRouteMeta(pathname));
   const phaseRef = useRef("idle");
   const pendingHrefRef = useRef(null);
-  const firstPathRef = useRef(true);
+  const previousPathRef = useRef(pathname);
   const revealPathRef = useRef("");
   const frameRef = useRef(0);
   const timersRef = useRef([]);
@@ -206,13 +211,15 @@ export default function SiteMotion({ pathname, disabled = false, onBusyChange })
   }, [clearMotionTimers, disabled, navigate, schedule, setPhase]);
 
   useLayoutEffect(() => {
-    scrollToTop();
+    const pathChanged = previousPathRef.current !== pathname;
+    previousPathRef.current = pathname;
     setRouteMeta(getRouteMeta(pathname));
 
-    if (firstPathRef.current) {
-      firstPathRef.current = false;
-      return undefined;
-    }
+    // Enabling motion after the first-visit loader must not start another
+    // full page transition. Only an actual pathname change reaches below.
+    if (!pathChanged) return undefined;
+
+    scrollToTop();
 
     if (disabled) {
       pendingHrefRef.current = null;
@@ -222,8 +229,8 @@ export default function SiteMotion({ pathname, disabled = false, onBusyChange })
 
     clearMotionTimers();
 
-    // A click-driven transition is already fully covered. Browser back/forward
-    // lands here without the covering phase, so cover instantly before paint.
+    // Click navigation is already covered. Browser back/forward reaches this
+    // effect without a covering phase, so it is covered before the next paint.
     if (!pendingHrefRef.current) {
       setPhase("covered");
     }
