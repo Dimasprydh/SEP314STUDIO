@@ -1,32 +1,213 @@
 // src/pages/About.jsx
-import React, { useRef, useState, useCallback } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import "./about.css";
 import { asset } from "../utils/asset";
 
 export default function About() {
   const [ratio, setRatio] = useState(3 / 4);
   const [mediaState, setMediaState] = useState("loading");
+
   const vRef = useRef(null);
+  const mountedRef = useRef(false);
+  const readyRef = useRef(false);
+  const framePendingRef = useRef(false);
+  const retryCountRef = useRef(0);
+  const errorRetryCountRef = useRef(0);
+  const retryTimerRef = useRef(0);
+  const fallbackFrameTimerRef = useRef(0);
+  const videoFrameCallbackRef = useRef(0);
 
-  const onMeta = useCallback(() => {
-    const v = vRef.current;
-    if (!v) return;
-    const { videoWidth: w, videoHeight: h } = v;
-    if (w && h) setRatio(w / h);
-  }, []);
-
-  const markMediaReady = useCallback(() => {
-    setMediaState("ready");
+  const clearPlaybackTimers = useCallback(() => {
+    window.clearTimeout(retryTimerRef.current);
+    window.clearTimeout(fallbackFrameTimerRef.current);
 
     const video = vRef.current;
-    if (video?.paused) {
-      video.play().catch(() => {});
+    if (
+      video &&
+      videoFrameCallbackRef.current &&
+      typeof video.cancelVideoFrameCallback === "function"
+    ) {
+      video.cancelVideoFrameCallback(videoFrameCallbackRef.current);
     }
+
+    retryTimerRef.current = 0;
+    fallbackFrameTimerRef.current = 0;
+    videoFrameCallbackRef.current = 0;
+    framePendingRef.current = false;
   }, []);
 
-  const markMediaError = useCallback(() => {
-    setMediaState("error");
+  const onMeta = useCallback(() => {
+    const video = vRef.current;
+    if (!video) return;
+
+    const { videoWidth: width, videoHeight: height } = video;
+    if (width && height) setRatio(width / height);
   }, []);
+
+  const confirmRenderedFrame = useCallback(() => {
+    const video = vRef.current;
+
+    if (
+      !video ||
+      !mountedRef.current ||
+      readyRef.current ||
+      framePendingRef.current ||
+      video.readyState < 2 ||
+      video.paused
+    ) {
+      return;
+    }
+
+    const commitReady = () => {
+      framePendingRef.current = false;
+
+      requestAnimationFrame(() => {
+        if (
+          !mountedRef.current ||
+          readyRef.current ||
+          video.readyState < 2 ||
+          video.paused
+        ) {
+          return;
+        }
+
+        readyRef.current = true;
+        retryCountRef.current = 0;
+        errorRetryCountRef.current = 0;
+        setMediaState("ready");
+      });
+    };
+
+    framePendingRef.current = true;
+
+    if (typeof video.requestVideoFrameCallback === "function") {
+      videoFrameCallbackRef.current = video.requestVideoFrameCallback(() => {
+        videoFrameCallbackRef.current = 0;
+        commitReady();
+      });
+      return;
+    }
+
+    fallbackFrameTimerRef.current = window.setTimeout(commitReady, 140);
+  }, []);
+
+  const attemptPlayback = useCallback(() => {
+    const video = vRef.current;
+
+    if (!video || !mountedRef.current || readyRef.current) return;
+
+    window.clearTimeout(retryTimerRef.current);
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+
+    const playPromise = video.play();
+
+    if (!playPromise || typeof playPromise.catch !== "function") return;
+
+    playPromise.catch(() => {
+      if (!mountedRef.current || readyRef.current) return;
+
+      retryCountRef.current += 1;
+      const delay = Math.min(250 + retryCountRef.current * 180, 1000);
+      retryTimerRef.current = window.setTimeout(attemptPlayback, delay);
+    });
+  }, []);
+
+  const handlePlaying = useCallback(() => {
+    retryCountRef.current = 0;
+    window.clearTimeout(retryTimerRef.current);
+    confirmRenderedFrame();
+  }, [confirmRenderedFrame]);
+
+  const handleWaiting = useCallback(() => {
+    if (readyRef.current) return;
+
+    window.clearTimeout(retryTimerRef.current);
+    retryTimerRef.current = window.setTimeout(attemptPlayback, 180);
+  }, [attemptPlayback]);
+
+  const handleMediaError = useCallback(() => {
+    const video = vRef.current;
+
+    if (!video || !mountedRef.current || readyRef.current) return;
+
+    clearPlaybackTimers();
+
+    if (errorRetryCountRef.current < 2) {
+      errorRetryCountRef.current += 1;
+      setMediaState("loading");
+
+      retryTimerRef.current = window.setTimeout(() => {
+        if (!mountedRef.current || readyRef.current) return;
+
+        try {
+          video.load();
+        } catch {
+          // load() may throw on a browser that is already tearing down media.
+        }
+
+        attemptPlayback();
+      }, 260 * errorRetryCountRef.current);
+
+      return;
+    }
+
+    setMediaState("error");
+  }, [attemptPlayback, clearPlaybackTimers]);
+
+  const handleMetadata = useCallback(() => {
+    onMeta();
+    attemptPlayback();
+  }, [attemptPlayback, onMeta]);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    readyRef.current = false;
+    retryCountRef.current = 0;
+    errorRetryCountRef.current = 0;
+    setMediaState("loading");
+
+    const video = vRef.current;
+    if (!video) return undefined;
+
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+
+    const retryStartup = window.setTimeout(() => {
+      if (video.readyState === 0) {
+        try {
+          video.load();
+        } catch {
+          // Ignore browsers that reject an unnecessary load() call.
+        }
+      }
+
+      attemptPlayback();
+    }, 60);
+
+    const resumeWhenVisible = () => {
+      if (document.hidden || readyRef.current) return;
+      attemptPlayback();
+    };
+
+    document.addEventListener("visibilitychange", resumeWhenVisible);
+    window.addEventListener("focus", resumeWhenVisible);
+
+    return () => {
+      mountedRef.current = false;
+      window.clearTimeout(retryStartup);
+      clearPlaybackTimers();
+      document.removeEventListener("visibilitychange", resumeWhenVisible);
+      window.removeEventListener("focus", resumeWhenVisible);
+    };
+  }, [attemptPlayback, clearPlaybackTimers]);
 
   const figureClassName = [
     "about__figure",
@@ -49,7 +230,7 @@ export default function About() {
           >
             <div
               className="about__videoShell"
-              onContextMenu={(e) => e.preventDefault()}
+              onContextMenu={(event) => event.preventDefault()}
               draggable={false}
             >
               <video
@@ -64,10 +245,14 @@ export default function About() {
                 disablePictureInPicture
                 controlsList="nodownload noplaybackrate nofullscreen"
                 tabIndex={-1}
-                onLoadedMetadata={onMeta}
-                onLoadedData={markMediaReady}
-                onCanPlay={markMediaReady}
-                onError={markMediaError}
+                onLoadedMetadata={handleMetadata}
+                onLoadedData={attemptPlayback}
+                onCanPlay={attemptPlayback}
+                onPlaying={handlePlaying}
+                onTimeUpdate={confirmRenderedFrame}
+                onWaiting={handleWaiting}
+                onStalled={handleWaiting}
+                onError={handleMediaError}
               >
                 <source
                   src={asset("assets/about-image-video/profile.mp4")}
@@ -91,7 +276,7 @@ export default function About() {
 
               <div
                 className="about__shield"
-                onContextMenu={(e) => e.preventDefault()}
+                onContextMenu={(event) => event.preventDefault()}
                 aria-hidden="true"
               />
             </div>
@@ -165,7 +350,11 @@ export default function About() {
                 <li>
                   <b>2026 — Now</b>
                   <span>
-                    <a href="https://forhermoment.com/" target="_blank" rel="noreferrer">
+                    <a
+                      href="https://forhermoment.com/"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       For Her Moment
                     </a>
                   </span>
@@ -174,7 +363,11 @@ export default function About() {
                 <li>
                   <b>2025 — Now</b>
                   <span>
-                    <a href="https://onionwrks.com/" target="_blank" rel="noreferrer">
+                    <a
+                      href="https://onionwrks.com/"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       Onion Works
                     </a>
                   </span>
@@ -183,7 +376,11 @@ export default function About() {
                 <li>
                   <b>2024 — Now</b>
                   <span>
-                    <a href="https://www.scoreoffscoot.com/" target="_blank" rel="noreferrer">
+                    <a
+                      href="https://www.scoreoffscoot.com/"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       Socre Off Scoot and Fittyandco
                     </a>
                   </span>
@@ -192,7 +389,11 @@ export default function About() {
                 <li>
                   <b>2024 — Now</b>
                   <span>
-                    <a href="https://www.roomforair.com/" target="_blank" rel="noreferrer">
+                    <a
+                      href="https://www.roomforair.com/"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       Room For Air
                     </a>
                   </span>
@@ -201,7 +402,11 @@ export default function About() {
                 <li>
                   <b>2024 — Now</b>
                   <span>
-                    <a href="https://mediocreq.com/" target="_blank" rel="noreferrer">
+                    <a
+                      href="https://mediocreq.com/"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       Mediocre
                     </a>
                   </span>
@@ -210,7 +415,11 @@ export default function About() {
                 <li>
                   <b>2018 — 2019</b>
                   <span>
-                    <a href="https://www.doktermobil.com/" target="_blank" rel="noreferrer">
+                    <a
+                      href="https://www.doktermobil.com/"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       Dokter Mobil Indonesia
                     </a>
                   </span>
