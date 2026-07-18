@@ -304,9 +304,7 @@ export default function About() {
           {/* Contact */}
           <div className="about__contact">
             <h2>Contact</h2>
-            <a href="mailto:sep314studio@gmail.com">
-              Sep314studio@gmail.com
-            </a>
+            <a href="mailto:sep314studio@gmail.com">Email</a>
             <span className="sep">—</span>
             <a
               href="https://instagram.com/sep314studio"
