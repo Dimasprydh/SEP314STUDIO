@@ -1,0 +1,40 @@
+.intro-loader {
+  contain: layout paint style;
+  backface-visibility: hidden;
+  transform-style: flat;
+}
+
+.intro-loader--exit {
+  pointer-events: none;
+  transform: translate3d(0, -100.5%, 0);
+  transition: transform 760ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* Avoid an expensive blend layer while the full viewport panel is moving. */
+.intro-loader__noise {
+  opacity: 0.06;
+  mix-blend-mode: normal;
+}
+
+.intro-loader--exit .intro-loader__noise {
+  opacity: 0;
+  transition: opacity 120ms linear;
+}
+
+/* The panel itself is the exit motion. Keep its contents visually locked. */
+.intro-loader--exit .intro-loader__stage {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+.intro-loader--exit .intro-loader__ghost,
+.intro-loader--exit .intro-loader__meta,
+.intro-loader--exit .intro-loader__slogan,
+.intro-loader--exit .intro-loader__progress {
+  transition: none;
+}
+
+.intro-loader__meta--top {
+  justify-content: flex-start;
+}
