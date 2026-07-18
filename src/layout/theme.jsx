@@ -27,7 +27,6 @@ function shouldShowInitialLoader() {
 export default function Theme() {
   const location = useLocation();
   const [showLoader, setShowLoader] = useState(shouldShowInitialLoader);
-  const [loaderExiting, setLoaderExiting] = useState(false);
   const [transitionBusy, setTransitionBusy] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
 
@@ -42,17 +41,13 @@ export default function Theme() {
     return () => mq.removeEventListener?.("change", apply);
   }, []);
 
-  const handleReveal = useCallback(() => {
-    setLoaderExiting(true);
-  }, []);
-
   const handleDone = useCallback(() => {
+    // LoaderOverlay calls this from the panel's real transitionend event.
+    // Releasing this state is the single start signal for Overview motion.
     setShowLoader(false);
-    setLoaderExiting(false);
   }, []);
 
   const interactionLocked = showLoader || transitionBusy;
-  const initialRevealLocked = showLoader && !loaderExiting;
 
   // Keep the page fully rendered and settled behind the black intro panel.
   // Only the panel moves during exit, avoiding concurrent blur/scale work.
@@ -71,14 +66,10 @@ export default function Theme() {
       <SmoothScroll disabled={interactionLocked || reduceMotion} />
       <SiteMotion
         pathname={location.pathname}
-        disabled={initialRevealLocked || reduceMotion}
+        disabled={showLoader || reduceMotion}
         onBusyChange={setTransitionBusy}
       />
-      <LoaderOverlay
-        show={showLoader}
-        onReveal={handleReveal}
-        onDone={handleDone}
-      />
+      <LoaderOverlay show={showLoader} onDone={handleDone} />
 
       <header>
         <Header />
@@ -89,7 +80,7 @@ export default function Theme() {
         aria-busy={interactionLocked ? "true" : "false"}
         style={mainStyle}
       >
-        <Outlet />
+        <Outlet context={{ initialLoaderActive: showLoader }} />
       </main>
     </>
   );

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 import "./home.css";
 import { asset } from "../utils/asset";
 
@@ -178,6 +179,8 @@ function Card({ p, hiddenCard = false, priority = false }) {
 }
 
 export default function Home() {
+  const outletContext = useOutletContext();
+  const initialLoaderActive = Boolean(outletContext?.initialLoaderActive);
   const stripRef = useRef(null);
   const trackRef = useRef(null);
   const groupRef = useRef(null);
@@ -196,6 +199,13 @@ export default function Home() {
     let resizeObserver = null;
     let safetyTimer = 0;
 
+    // A first-visit intro may already have preloaded the assets, but its panel
+    // must fully leave before any Overview reveal or marquee movement begins.
+    if (initialLoaderActive) {
+      strip.classList.remove("is-media-ready");
+      track.classList.remove("is-ready");
+    }
+
     const measureAndSet = () => {
       cancelAnimationFrame(frame);
 
@@ -213,11 +223,12 @@ export default function Home() {
     };
 
     const revealTrack = () => {
-      if (disposed || ready) return;
+      if (disposed || ready || initialLoaderActive) return;
       ready = true;
       measureAndSet();
 
-      // Keep one painted loading frame before starting the visual reveal.
+      // Keep two painted frames after the loader is gone before starting the
+      // original visual reveal, so the first frame is never skipped.
       revealFrame = requestAnimationFrame(() => {
         revealFrame = requestAnimationFrame(() => {
           if (disposed) return;
@@ -255,9 +266,11 @@ export default function Home() {
     measureAndSet();
     checkCriticalImages();
 
-    // Never leave the visitor on a loader forever if a browser stalls an image
-    // event. Individual cards still keep a deliberate loading treatment.
-    safetyTimer = window.setTimeout(revealTrack, 3200);
+    // The timeout only applies after the intro gate is open. During the intro,
+    // the effect reruns from a clean state when LoaderOverlay reports done.
+    if (!initialLoaderActive) {
+      safetyTimer = window.setTimeout(revealTrack, 3200);
+    }
 
     if ("ResizeObserver" in window) {
       resizeObserver = new ResizeObserver(measureAndSet);
@@ -288,7 +301,7 @@ export default function Home() {
         image.removeEventListener("sep:image-ready", onImageReady);
       });
     };
-  }, []);
+  }, [initialLoaderActive]);
 
   return (
     <main className="home">
