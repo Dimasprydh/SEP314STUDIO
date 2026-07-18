@@ -1,76 +1,180 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { asset } from "../utils/asset";
+import "./loader-overlay.css";
 
-/**
- * Overlay iframe ke /loader.html
- * Anti-bocor/see-through:
- *  - Container SELALU background #000 sampai overlay dibuang.
- *  - Lock scroll body saat overlay tampil.
- */
-export default function LoaderOverlay({ show, onDone, z = 2147483647 }) {
-  const base = import.meta.env.BASE_URL || "/";
-  const src = useMemo(
-    () => (show ? `${base}loader.html?_=${Date.now()}` : ""),
-    [show, base]
+const START_SECOND = 4;
+const TARGET_SECOND = 10;
+const ENTER_MS = 420;
+const TICK_MS = 170;
+const LOCK_HOLD_MS = 260;
+const EXIT_MS = 680;
+
+const CRITICAL_OVERVIEW_ASSETS = [
+  "assets/portofolio-website/fhm-website.png",
+  "assets/portofolio-website/mediocre.png",
+  "assets/portofolio-website/roomforair.png",
+  "assets/portofolio-website/onionwrks.png",
+];
+
+function padSecond(value) {
+  return String(value).padStart(2, "0");
+}
+
+export default function LoaderOverlay({
+  show,
+  onReveal,
+  onDone,
+  z = 2147483647,
+}) {
+  const [phase, setPhase] = useState("enter");
+  const [counter, setCounter] = useState({
+    previous: null,
+    current: START_SECOND,
+    tick: 0,
+  });
+  const [progress, setProgress] = useState(0);
+
+  const rootClassName = useMemo(
+    () => `intro-loader intro-loader--${phase}`,
+    [phase]
   );
 
-  // Lock scroll saat loader on
   useEffect(() => {
-    if (!show) return;
+    if (!show) return undefined;
+
+    const timers = [];
+    const schedule = (callback, delay) => {
+      const timer = window.setTimeout(callback, delay);
+      timers.push(timer);
+      return timer;
+    };
+
+    setPhase("enter");
+    setCounter({ previous: null, current: START_SECOND, tick: 0 });
+    setProgress(0);
+
+    CRITICAL_OVERVIEW_ASSETS.forEach((path) => {
+      const image = new Image();
+      image.decoding = "async";
+      image.src = asset(path);
+    });
+
+    const reducedMotion = window.matchMedia?.(
+      "(prefers-reduced-motion: reduce)"
+    )?.matches;
+
+    if (reducedMotion) {
+      setCounter({
+        previous: null,
+        current: TARGET_SECOND,
+        tick: TARGET_SECOND - START_SECOND,
+      });
+      setProgress(1);
+      setPhase("locked");
+      schedule(() => {
+        onReveal?.();
+        setPhase("exit");
+      }, 160);
+      schedule(() => onDone?.(), 320);
+    } else {
+      schedule(() => setPhase("counting"), 70);
+
+      const totalSteps = TARGET_SECOND - START_SECOND;
+
+      for (let step = 1; step <= totalSteps; step += 1) {
+        const nextSecond = START_SECOND + step;
+
+        schedule(() => {
+          setCounter((current) => ({
+            previous: current.current,
+            current: nextSecond,
+            tick: step,
+          }));
+          setProgress(step / totalSteps);
+        }, ENTER_MS + step * TICK_MS);
+      }
+
+      const lockAt = ENTER_MS + totalSteps * TICK_MS + 110;
+      const exitAt = lockAt + LOCK_HOLD_MS;
+
+      schedule(() => setPhase("locked"), lockAt);
+      schedule(() => {
+        onReveal?.();
+        setPhase("exit");
+      }, exitAt);
+      schedule(() => onDone?.(), exitAt + EXIT_MS);
+    }
+
     const { documentElement, body } = document;
-    const prevHtml = documentElement.style.overflow;
-    const prevBody = body.style.overflow;
+    const previousHtmlOverflow = documentElement.style.overflow;
+    const previousBodyOverflow = body.style.overflow;
     documentElement.style.overflow = "hidden";
     body.style.overflow = "hidden";
-    return () => {
-      documentElement.style.overflow = prevHtml;
-      body.style.overflow = prevBody;
-    };
-  }, [show]);
 
-  // Dengarkan pesan selesai dari iframe
-  useEffect(() => {
-    if (!show) return;
-    const handleMsg = (e) => {
-      if (e?.data === "s314-loader-done") onDone?.();
-    };
-    window.addEventListener("message", handleMsg);
-    // fallback anti-stuck
-    const safety = setTimeout(() => onDone?.(), 6500);
     return () => {
-      window.removeEventListener("message", handleMsg);
-      clearTimeout(safety);
+      timers.forEach((timer) => window.clearTimeout(timer));
+      documentElement.style.overflow = previousHtmlOverflow;
+      body.style.overflow = previousBodyOverflow;
     };
-  }, [show, onDone]);
+  }, [onDone, onReveal, show]);
 
   if (!show) return null;
 
   return (
     <div
+      className={rootClassName}
       style={{
-        position: "fixed",
-        inset: 0,
         zIndex: z,
-        // PENTING: tetap hitam solid sampai overlay di-unmount
-        background: "#000",
-        pointerEvents: "auto",
+        "--intro-progress": progress,
+        "--intro-ghost-shift": `${progress * 12}px`,
       }}
+      aria-label="SEP314STUDIO introduction"
     >
-      <iframe
-        title="sep-loader"
-        src={src}
-        allow="autoplay"
-        // cukup untuk JS internal
-        sandbox="allow-scripts allow-same-origin"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          border: 0,
-          display: "block",
-          background: "transparent",
-        }}
-      />
+      <div className="intro-loader__noise" aria-hidden="true" />
+      <div className="intro-loader__ghost" aria-hidden="true">
+        3.14
+      </div>
+
+      <div className="intro-loader__meta intro-loader__meta--top">
+        <span>SEP314STUDIO</span>
+        <span>001 / 001</span>
+      </div>
+
+      <div className="intro-loader__stage">
+        <div className="intro-loader__aperture">
+          <div className="intro-loader__slogan">
+            <span>SEP 3.14 PM 10:44:</span>
+            <span className="intro-loader__seconds" aria-live="polite">
+              {counter.previous !== null && (
+                <span
+                  key={`previous-${counter.tick}`}
+                  className="intro-loader__second intro-loader__second--out"
+                  aria-hidden="true"
+                >
+                  {padSecond(counter.previous)}
+                </span>
+              )}
+              <span
+                key={`current-${counter.tick}`}
+                className={`intro-loader__second intro-loader__second--in ${
+                  counter.tick === 0 ? "is-initial" : ""
+                }`}
+              >
+                {padSecond(counter.current)}
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <div className="intro-loader__progress" aria-hidden="true">
+          <span />
+        </div>
+      </div>
+
+      <div className="intro-loader__meta intro-loader__meta--bottom">
+        <span>JAKARTA, IDN</span>
+        <span>DESIGN / DEVELOPMENT</span>
+      </div>
     </div>
   );
 }
