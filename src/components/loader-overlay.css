@@ -1,0 +1,298 @@
+.intro-loader {
+  --intro-blue: #2563eb;
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: clamp(18px, 2.4vw, 34px);
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  isolation: isolate;
+}
+
+.intro-loader--exit {
+  transform: translate3d(0, -100%, 0);
+  transition: transform 680ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.intro-loader__noise {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.12;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 4px, 4px 100%;
+  mix-blend-mode: screen;
+}
+
+.intro-loader__ghost {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 0;
+  transform: translate3d(
+      calc(-50% + var(--intro-ghost-shift, 0px)),
+      -50%,
+      0
+    )
+    scale(0.98);
+  font-size: clamp(180px, 42vw, 720px);
+  font-weight: 800;
+  line-height: 0.72;
+  letter-spacing: -0.08em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.08);
+  text-stroke: 1px rgba(255, 255, 255, 0.08);
+  opacity: 0.62;
+  white-space: nowrap;
+  pointer-events: none;
+  transition:
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    -webkit-text-stroke-color 220ms ease,
+    opacity 220ms ease;
+}
+
+.intro-loader--locked .intro-loader__ghost {
+  -webkit-text-stroke-color: rgba(37, 99, 235, 0.34);
+  opacity: 0.9;
+}
+
+.intro-loader__meta {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    monospace;
+  font-size: clamp(9px, 0.72vw, 12px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  transition:
+    opacity 420ms 120ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 520ms 120ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.intro-loader--counting .intro-loader__meta,
+.intro-loader--locked .intro-loader__meta,
+.intro-loader--exit .intro-loader__meta {
+  opacity: 0.72;
+  transform: translate3d(0, 0, 0);
+}
+
+.intro-loader__meta--top {
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.intro-loader__meta--bottom {
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.intro-loader__stage {
+  position: relative;
+  z-index: 2;
+  align-self: center;
+  width: min(92vw, 1480px);
+  margin: 0 auto;
+}
+
+.intro-loader__aperture {
+  overflow: hidden;
+  clip-path: inset(49% 0 49% 0);
+  opacity: 0;
+  transition:
+    clip-path 560ms cubic-bezier(0.77, 0, 0.18, 1),
+    opacity 240ms ease;
+}
+
+.intro-loader--counting .intro-loader__aperture,
+.intro-loader--locked .intro-loader__aperture,
+.intro-loader--exit .intro-loader__aperture {
+  clip-path: inset(0 0 0 0);
+  opacity: 1;
+}
+
+.intro-loader__slogan {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  width: 100%;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-size: clamp(28px, 7.25vw, 126px);
+  font-weight: 800;
+  line-height: 0.88;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  transform: translate3d(0, 14px, 0) scale(0.985);
+  filter: blur(3px);
+  transition:
+    transform 640ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.intro-loader--counting .intro-loader__slogan,
+.intro-loader--locked .intro-loader__slogan,
+.intro-loader--exit .intro-loader__slogan {
+  transform: translate3d(0, 0, 0) scale(1);
+  filter: blur(0);
+}
+
+.intro-loader__seconds {
+  position: relative;
+  display: inline-block;
+  width: 2ch;
+  height: 0.92em;
+  margin-left: 0.02em;
+  overflow: hidden;
+  vertical-align: -0.02em;
+  color: inherit;
+  transition:
+    color 180ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.intro-loader__second {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  text-align: left;
+  will-change: transform, opacity, filter;
+}
+
+.intro-loader__second--in {
+  animation: introSecondIn 170ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.intro-loader__second--in.is-initial {
+  animation: none;
+}
+
+.intro-loader__second--out {
+  animation: introSecondOut 170ms cubic-bezier(0.64, 0, 0.78, 0) both;
+}
+
+.intro-loader--locked .intro-loader__seconds {
+  color: var(--intro-blue);
+  transform: scaleX(1.035);
+}
+
+.intro-loader__progress {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  margin-top: clamp(18px, 2vw, 28px);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.18);
+  transform: scaleX(0.36);
+  transform-origin: center;
+  opacity: 0;
+  transition:
+    opacity 360ms 140ms ease,
+    transform 560ms 80ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.intro-loader--counting .intro-loader__progress,
+.intro-loader--locked .intro-loader__progress,
+.intro-loader--exit .intro-loader__progress {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.intro-loader__progress span {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  transform: scaleX(var(--intro-progress, 0));
+  transform-origin: left center;
+  transition:
+    transform 170ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 180ms ease;
+}
+
+.intro-loader--locked .intro-loader__progress span {
+  background: var(--intro-blue);
+}
+
+.intro-loader--exit .intro-loader__stage {
+  transform: translate3d(0, -18px, 0);
+  opacity: 0.84;
+  transition:
+    transform 680ms cubic-bezier(0.76, 0, 0.24, 1),
+    opacity 420ms ease;
+}
+
+@keyframes introSecondIn {
+  from {
+    transform: translate3d(0, 112%, 0);
+    opacity: 0;
+    filter: blur(5px);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes introSecondOut {
+  from {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+    filter: blur(0);
+  }
+  to {
+    transform: translate3d(0, -112%, 0);
+    opacity: 0;
+    filter: blur(5px);
+  }
+}
+
+@media (max-width: 720px) {
+  .intro-loader {
+    padding: 16px 14px 18px;
+  }
+
+  .intro-loader__stage {
+    width: 100%;
+  }
+
+  .intro-loader__slogan {
+    font-size: clamp(22px, 8vw, 52px);
+    letter-spacing: -0.04em;
+  }
+
+  .intro-loader__ghost {
+    font-size: clamp(180px, 70vw, 420px);
+  }
+
+  .intro-loader__meta {
+    font-size: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-loader,
+  .intro-loader *,
+  .intro-loader *::before,
+  .intro-loader *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

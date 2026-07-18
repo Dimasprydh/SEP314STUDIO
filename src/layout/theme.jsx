@@ -27,6 +27,7 @@ function shouldShowInitialLoader() {
 export default function Theme() {
   const location = useLocation();
   const [showLoader, setShowLoader] = useState(shouldShowInitialLoader);
+  const [loaderRevealing, setLoaderRevealing] = useState(false);
   const [transitionBusy, setTransitionBusy] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
 
@@ -41,30 +42,36 @@ export default function Theme() {
     return () => mq.removeEventListener?.("change", apply);
   }, []);
 
+  const handleReveal = useCallback(() => {
+    setLoaderRevealing(true);
+  }, []);
+
   const handleDone = useCallback(() => {
+    setLoaderRevealing(true);
     setShowLoader(false);
   }, []);
 
   const interactionLocked = showLoader || transitionBusy;
+  const contentRevealed = !showLoader || loaderRevealing;
 
   const mainStyle = reduceMotion
     ? {
-        visibility: showLoader ? "hidden" : "visible",
-        opacity: showLoader ? 0 : 1,
+        visibility: "visible",
+        opacity: contentRevealed ? 1 : 0,
         transition: "opacity 140ms linear",
         pointerEvents: interactionLocked ? "none" : "auto",
       }
     : {
-        visibility: showLoader ? "hidden" : "visible",
-        opacity: showLoader ? 0 : 1,
-        transform: showLoader
-          ? "translateY(6px) scale(0.995)"
-          : "translateY(0) scale(1)",
-        filter: showLoader ? "blur(10px)" : "blur(0)",
+        visibility: "visible",
+        opacity: contentRevealed ? 1 : 0.72,
+        transform: contentRevealed
+          ? "translateY(0) scale(1)"
+          : "translateY(12px) scale(0.985)",
+        filter: contentRevealed ? "blur(0)" : "blur(5px)",
         transition:
-          "opacity 420ms cubic-bezier(0.22,1,0.36,1), " +
-          "transform 520ms cubic-bezier(0.22,1,0.36,1), " +
-          "filter 520ms cubic-bezier(0.22,1,0.36,1)",
+          "opacity 520ms cubic-bezier(0.22,1,0.36,1), " +
+          "transform 680ms cubic-bezier(0.22,1,0.36,1), " +
+          "filter 620ms cubic-bezier(0.22,1,0.36,1)",
         willChange: showLoader ? "opacity, transform, filter" : "auto",
         pointerEvents: interactionLocked ? "none" : "auto",
       };
@@ -78,7 +85,11 @@ export default function Theme() {
         disabled={showLoader || reduceMotion}
         onBusyChange={setTransitionBusy}
       />
-      <LoaderOverlay show={showLoader} onDone={handleDone} />
+      <LoaderOverlay
+        show={showLoader}
+        onReveal={handleReveal}
+        onDone={handleDone}
+      />
 
       <header>
         <Header />
