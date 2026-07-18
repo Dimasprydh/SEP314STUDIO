@@ -1,13 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { asset } from "../utils/asset";
 import "./loader-overlay.css";
+import "./loader-overlay-exit.css";
 
 const START_SECOND = 4;
 const TARGET_SECOND = 10;
 const ENTER_MS = 420;
 const TICK_MS = 170;
 const LOCK_HOLD_MS = 260;
-const EXIT_MS = 680;
+const EXIT_MS = 760;
 
 const CRITICAL_OVERVIEW_ASSETS = [
   "assets/portofolio-website/fhm-website.png",
@@ -33,14 +34,23 @@ export default function LoaderOverlay({
     tick: 0,
   });
   const [progress, setProgress] = useState(0);
+  const completedRef = useRef(false);
 
   const rootClassName = useMemo(
     () => `intro-loader intro-loader--${phase}`,
     [phase]
   );
 
+  const finish = useCallback(() => {
+    if (completedRef.current) return;
+    completedRef.current = true;
+    onDone?.();
+  }, [onDone]);
+
   useEffect(() => {
     if (!show) return undefined;
+
+    completedRef.current = false;
 
     const timers = [];
     const schedule = (callback, delay) => {
@@ -71,11 +81,12 @@ export default function LoaderOverlay({
       });
       setProgress(1);
       setPhase("locked");
+
       schedule(() => {
         onReveal?.();
         setPhase("exit");
-      }, 160);
-      schedule(() => onDone?.(), 320);
+      }, 120);
+      schedule(finish, 260);
     } else {
       schedule(() => setPhase("counting"), 70);
 
@@ -95,14 +106,17 @@ export default function LoaderOverlay({
       }
 
       const lockAt = ENTER_MS + totalSteps * TICK_MS + 110;
-      const exitAt = lockAt + LOCK_HOLD_MS;
+      const revealAt = lockAt + LOCK_HOLD_MS;
+      const exitAt = revealAt + 34;
 
       schedule(() => setPhase("locked"), lockAt);
-      schedule(() => {
-        onReveal?.();
-        setPhase("exit");
-      }, exitAt);
-      schedule(() => onDone?.(), exitAt + EXIT_MS);
+
+      // Prepare the already-rendered page one frame before the panel moves.
+      schedule(() => onReveal?.(), revealAt);
+      schedule(() => setPhase("exit"), exitAt);
+
+      // Safety fallback only. Normal completion is driven by transitionend.
+      schedule(finish, exitAt + EXIT_MS + 260);
     }
 
     const { documentElement, body } = document;
@@ -116,7 +130,22 @@ export default function LoaderOverlay({
       documentElement.style.overflow = previousHtmlOverflow;
       body.style.overflow = previousBodyOverflow;
     };
-  }, [onDone, onReveal, show]);
+  }, [finish, onReveal, show]);
+
+  const handleTransitionEnd = useCallback(
+    (event) => {
+      if (
+        phase !== "exit" ||
+        event.target !== event.currentTarget ||
+        event.propertyName !== "transform"
+      ) {
+        return;
+      }
+
+      finish();
+    },
+    [finish, phase]
+  );
 
   if (!show) return null;
 
@@ -129,6 +158,7 @@ export default function LoaderOverlay({
         "--intro-ghost-shift": `${progress * 12}px`,
       }}
       aria-label="SEP314STUDIO introduction"
+      onTransitionEnd={handleTransitionEnd}
     >
       <div className="intro-loader__noise" aria-hidden="true" />
       <div className="intro-loader__ghost" aria-hidden="true">
@@ -137,7 +167,6 @@ export default function LoaderOverlay({
 
       <div className="intro-loader__meta intro-loader__meta--top">
         <span>SEP314STUDIO</span>
-        <span>001 / 001</span>
       </div>
 
       <div className="intro-loader__stage">

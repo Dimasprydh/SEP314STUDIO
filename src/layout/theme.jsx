@@ -27,7 +27,7 @@ function shouldShowInitialLoader() {
 export default function Theme() {
   const location = useLocation();
   const [showLoader, setShowLoader] = useState(shouldShowInitialLoader);
-  const [loaderRevealing, setLoaderRevealing] = useState(false);
+  const [loaderExiting, setLoaderExiting] = useState(false);
   const [transitionBusy, setTransitionBusy] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
 
@@ -43,38 +43,27 @@ export default function Theme() {
   }, []);
 
   const handleReveal = useCallback(() => {
-    setLoaderRevealing(true);
+    setLoaderExiting(true);
   }, []);
 
   const handleDone = useCallback(() => {
-    setLoaderRevealing(true);
     setShowLoader(false);
+    setLoaderExiting(false);
   }, []);
 
   const interactionLocked = showLoader || transitionBusy;
-  const contentRevealed = !showLoader || loaderRevealing;
+  const initialRevealLocked = showLoader && !loaderExiting;
 
-  const mainStyle = reduceMotion
-    ? {
-        visibility: "visible",
-        opacity: contentRevealed ? 1 : 0,
-        transition: "opacity 140ms linear",
-        pointerEvents: interactionLocked ? "none" : "auto",
-      }
-    : {
-        visibility: "visible",
-        opacity: contentRevealed ? 1 : 0.72,
-        transform: contentRevealed
-          ? "translateY(0) scale(1)"
-          : "translateY(12px) scale(0.985)",
-        filter: contentRevealed ? "blur(0)" : "blur(5px)",
-        transition:
-          "opacity 520ms cubic-bezier(0.22,1,0.36,1), " +
-          "transform 680ms cubic-bezier(0.22,1,0.36,1), " +
-          "filter 620ms cubic-bezier(0.22,1,0.36,1)",
-        willChange: showLoader ? "opacity, transform, filter" : "auto",
-        pointerEvents: interactionLocked ? "none" : "auto",
-      };
+  // Keep the page fully rendered and settled behind the black intro panel.
+  // Only the panel moves during exit, avoiding concurrent blur/scale work.
+  const mainStyle = {
+    visibility: "visible",
+    opacity: 1,
+    transform: "none",
+    filter: "none",
+    willChange: "auto",
+    pointerEvents: interactionLocked ? "none" : "auto",
+  };
 
   return (
     <>
@@ -82,7 +71,7 @@ export default function Theme() {
       <SmoothScroll disabled={interactionLocked || reduceMotion} />
       <SiteMotion
         pathname={location.pathname}
-        disabled={showLoader || reduceMotion}
+        disabled={initialRevealLocked || reduceMotion}
         onBusyChange={setTransitionBusy}
       />
       <LoaderOverlay
