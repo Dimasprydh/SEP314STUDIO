@@ -152,6 +152,20 @@
   will-change: auto;
 }
 
+/*
+ * Overview and Info manage their own media loading and reveal states.
+ * Keeping a second clip reveal on their outer wrappers can hide the loader
+ * and leave a black area while the child image or video is still preparing.
+ */
+.strip-wrap[data-motion-reveal="true"],
+.about__figure[data-motion-reveal="true"] {
+  opacity: 1 !important;
+  clip-path: none !important;
+  transform: none !important;
+  transition: none !important;
+  transition-delay: 0ms !important;
+}
+
 @media (max-width: 720px) {
   .site-transition {
     padding: 16px 14px 18px;
