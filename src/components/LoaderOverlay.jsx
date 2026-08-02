@@ -11,10 +11,10 @@ const LOCK_HOLD_MS = 260;
 const EXIT_MS = 760;
 
 const CRITICAL_OVERVIEW_ASSETS = [
+  "assets/portofolio-website/addictivepublic.png",
   "assets/portofolio-website/fhm-website.png",
   "assets/portofolio-website/mediocre.png",
   "assets/portofolio-website/roomforair.png",
-  "assets/portofolio-website/onionwrks.png",
 ];
 
 function padSecond(value) {

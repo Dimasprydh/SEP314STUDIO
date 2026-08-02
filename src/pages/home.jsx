@@ -5,6 +5,17 @@ import { asset } from "../utils/asset";
 
 const projects = [
   {
+    slug: "addictivepublic",
+    title: "ADDICTIVE PUBLIC",
+    years: "WEB / 2026—NOW",
+    img: "assets/portofolio-website/addictivepublic.png",
+    role: "Full-stack",
+    stack: "Shopify Liquid · HTML · CSS · JavaScript",
+    status: "Live",
+    href: "https://addictivepublic.com/",
+    subtitle: "Addictive Public | 2026 — Present",
+  },
+  {
     slug: "forhermoment",
     title: "FOR HER MOMENT",
     years: "WEB / 2026—NOW",

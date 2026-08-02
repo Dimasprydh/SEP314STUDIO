@@ -4,6 +4,13 @@ import { asset } from "../utils/asset";
 
 const projects = [
   {
+    slug: "addictivepublic",
+    title: "ADDICTIVE PUBLIC",
+    years: "WEB / 2026—NOW",
+    img: "assets/portofolio-website/addictivepublic.png",
+    href: "https://addictivepublic.com/",
+  },
+  {
     slug: "forhermoment",
     title: "FOR HER MOMENT",
     years: "WEB / 2026—NOW",
