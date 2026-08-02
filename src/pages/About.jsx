@@ -349,6 +349,19 @@ export default function About() {
                   <b>2026 — Now</b>
                   <span>
                     <a
+                      href="https://addictivepublic.com/"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Addictive Public
+                    </a>
+                  </span>
+                  <em>Web Designer &amp; Developer</em>
+                </li>
+                <li>
+                  <b>2026 — Now</b>
+                  <span>
+                    <a
                       href="https://forhermoment.com/"
                       target="_blank"
                       rel="noreferrer"
