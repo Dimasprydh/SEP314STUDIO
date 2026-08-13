@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import "./home.css";
+import "./home-mobile.css";
 import { asset } from "../utils/asset";
 
 const projects = [
