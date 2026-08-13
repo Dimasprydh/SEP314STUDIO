@@ -100,10 +100,6 @@ export default function Header() {
   const closeDrawer = useCallback(() => setOpen(false), []);
   const toggleDrawer = useCallback(() => setOpen((v) => !v), []);
   const onNavClick = useCallback(() => setOpen(false), []);
-  const onNavPointerDown = useCallback(() => {
-    document.body.style.overflow = "";
-    setOpen(false);
-  }, []);
 
   return (
     <>
@@ -152,10 +148,10 @@ export default function Header() {
           role="navigation"
           aria-label="Mobile navigation"
         >
-          <NavLink to="/" end className="drawer__link" onPointerDown={onNavPointerDown} onClick={onNavClick}>OVERVIEW</NavLink>
-          <NavLink to="/work" className="drawer__link" onPointerDown={onNavPointerDown} onClick={onNavClick}>WORK</NavLink>
-          <NavLink to="/service" className="drawer__link" onPointerDown={onNavPointerDown} onClick={onNavClick}>SERVICE</NavLink>
-          <NavLink to="/about" className="drawer__link" onPointerDown={onNavPointerDown} onClick={onNavClick}>INFO</NavLink>
+          <NavLink to="/" end className="drawer__link" onClick={onNavClick}>OVERVIEW</NavLink>
+          <NavLink to="/work" className="drawer__link" onClick={onNavClick}>WORK</NavLink>
+          <NavLink to="/service" className="drawer__link" onClick={onNavClick}>SERVICE</NavLink>
+          <NavLink to="/about" className="drawer__link" onClick={onNavClick}>INFO</NavLink>
         </div>
       </header>
     </>
