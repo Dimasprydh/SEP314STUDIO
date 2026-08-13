@@ -26,10 +26,63 @@
     <meta name="twitter:title" content="SEP314STUDIO — Web Designer &amp; Developer in Jakarta" />
     <meta name="twitter:description" content="SEP314STUDIO is a Jakarta-based web design and development studio creating custom Shopify and React websites for fashion and creative brands." />
     <meta name="twitter:image" content="https://sep314studio.xyz/assets/photo-icon/1-black-icon-porto.png" />
+
+    <style>
+      /* iOS / Instagram WebView: keep the Overview marquee on one stable layer. */
+      @media (max-width: 720px) {
+        .home .strip {
+          -webkit-mask-image: none !important;
+          mask-image: none !important;
+          -webkit-transform: none !important;
+          transform: none !important;
+        }
+
+        .home .track {
+          clip-path: none !important;
+          -webkit-clip-path: none !important;
+          backface-visibility: visible !important;
+          -webkit-backface-visibility: visible !important;
+          will-change: transform;
+        }
+
+        .home .strip:hover .track,
+        .home .strip:focus-within .track {
+          animation-play-state: running !important;
+        }
+
+        .home .card {
+          --overview-mobile-card-w: min(76vw, 330px);
+          --overview-mobile-card-h: min(50.6667vw, 220px);
+          flex: 0 0 var(--overview-mobile-card-w) !important;
+          width: var(--overview-mobile-card-w) !important;
+          min-width: var(--overview-mobile-card-w) !important;
+          max-width: var(--overview-mobile-card-w) !important;
+          height: var(--overview-mobile-card-h) !important;
+          aspect-ratio: auto !important;
+          contain: none !important;
+          -webkit-transform: none !important;
+          transform: none !important;
+        }
+
+        .home .card__img {
+          position: absolute !important;
+          inset: 0;
+          width: 100% !important;
+          height: 100% !important;
+          -webkit-transform: none !important;
+          transform: none !important;
+        }
+
+        .home .card.is-image-loaded:hover .card__img,
+        .home .card.is-image-loaded:focus-within .card__img {
+          -webkit-transform: none !important;
+          transform: none !important;
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
-
