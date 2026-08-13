@@ -133,15 +133,16 @@ export default function SiteMotion({ pathname, disabled = false, onBusyChange })
   useEffect(() => {
     if (!busy) return undefined;
 
-    const previousHtmlOverflow = document.documentElement.style.overflow;
-    const previousBodyOverflow = document.body.style.overflow;
-
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
 
     return () => {
-      document.documentElement.style.overflow = previousHtmlOverflow;
-      document.body.style.overflow = previousBodyOverflow;
+      // Do not restore a captured previous value here. On mobile the drawer may
+      // have been open when the transition started, so that previous value can
+      // be `hidden` and permanently freeze the destination page. The drawer is
+      // closed by its own navigation click before this cleanup runs.
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
     };
   }, [busy]);
 
