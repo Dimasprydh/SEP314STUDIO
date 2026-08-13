@@ -127,7 +127,7 @@ function Card({ p, hiddenCard = false, priority = false }) {
         className="card__img"
         src={asset(p.img)}
         alt={`${p.title} website preview`}
-        loading={priority ? "eager" : "lazy"}
+        loading="eager"
         fetchPriority={priority ? "high" : "auto"}
         decoding="async"
         draggable="false"
@@ -250,7 +250,11 @@ export default function Home() {
       });
     };
 
-    const criticalImages = Array.from(group.querySelectorAll("img")).slice(0, 4);
+    const isMobile = window.matchMedia("(max-width: 720px)").matches;
+    const criticalImages = Array.from(group.querySelectorAll("img")).slice(
+      0,
+      isMobile ? projects.length : 4
+    );
 
     const checkCriticalImages = () => {
       if (!criticalImages.length) {
