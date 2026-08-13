@@ -6,7 +6,7 @@
     scroll-padding-inline: 0;
     overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-x;
+    touch-action: pan-x pan-y;
     scrollbar-width: none;
     -webkit-mask-image: none !important;
     mask-image: none !important;
