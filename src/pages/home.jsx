@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import "./home.css";
-import "./home-mobile.css";
 import { asset } from "../utils/asset";
 
 const projects = [
@@ -211,8 +210,6 @@ export default function Home() {
     let resizeObserver = null;
     let safetyTimer = 0;
 
-    // A first-visit intro may already have preloaded the assets, but its panel
-    // must fully leave before any Overview reveal or marquee movement begins.
     if (initialLoaderActive) {
       strip.classList.remove("is-media-ready");
       track.classList.remove("is-ready");
@@ -239,8 +236,6 @@ export default function Home() {
       ready = true;
       measureAndSet();
 
-      // Keep two painted frames after the loader is gone before starting the
-      // original visual reveal, so the first frame is never skipped.
       revealFrame = requestAnimationFrame(() => {
         revealFrame = requestAnimationFrame(() => {
           if (disposed) return;
@@ -282,8 +277,6 @@ export default function Home() {
     measureAndSet();
     checkCriticalImages();
 
-    // The timeout only applies after the intro gate is open. During the intro,
-    // the effect reruns from a clean state when LoaderOverlay reports done.
     if (!initialLoaderActive) {
       safetyTimer = window.setTimeout(revealTrack, 3200);
     }
