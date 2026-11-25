@@ -281,18 +281,6 @@ export default function About() {
               />
             </div>
 
-            {/* OVERLAY teks besar */}
-            <div className="about__overlay">
-              <h1 className="about__name">SEP314STUDIO</h1>
-              <p className="about__ledeBig">
-                is a Jakarta based digital studio specializing in full-stack web
-                development, by Dimasprydh. I design and build fast, readable
-                websites aligned to your brand using Shopify (Liquid),
-                React/Vite, PHP, and modern HTML/CSS/JS. From VSCODE{" "}
-                <strong>concept</strong> to <strong>production</strong>.
-              </p>
-            </div>
-
             <figcaption className="visually-hidden">
               Portrait motion loop of SEP314STUDIO
             </figcaption>
